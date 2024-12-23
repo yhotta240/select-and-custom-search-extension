@@ -1,0 +1,81 @@
+/* ボタングループの全体スタイル */
+.my-extension-root.btn-group1 {
+    display: inline-flex;
+    position: relative;
+    vertical-align: middle;
+    border-radius: 5px;
+    /* box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px;
+    background-color: transparent; */
+    /* overflow: hidden; */
+}
+
+/* ボタンのスタイル */
+.my-extension-root .btn1 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: 400;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    /* ボタングループにフィット */
+    padding: "1px 6px";
+    font-size: 0.875rem;
+    line-height: 1.5;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    /* リンクスタイルを無効化 */
+    cursor: pointer;
+}
+
+/* ダークテーマのボタン */
+.my-extension-root .btn-dark1 {
+    background-color: #343a40;
+    color: #ffffff;
+    border-color: #343a40;
+}
+
+.my-extension-root .btn-dark1:hover {
+    background-color: #23272b;
+    border-color: #1d2124;
+    color: #ffffff;
+}
+
+/* アイコン付きボタン */
+.my-extension-root .btn-icon1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* width: auto; */
+    padding: 4px;
+    background: none;
+    border: none;
+    /* height: 40px; */
+}
+
+.my-extension-root .btn-icon1 img {
+    display: block;
+    height: 20px;
+    /* width: auto; */
+}
+
+/* アイコンボタンの中央寄せ */
+.my-extension-root .m-auto1 {
+    margin: auto;
+}
+
+.my-extension-root.flex-wrap1 {
+    flex-wrap: wrap !important;
+}
+
+/* ボタングループのカスタム位置とサイズ */
+#search-box {
+    position: absolute;
+    z-index: 2147483647;
+    /* height: 40px; */
+    width: auto;
+    border-radius: 0.35rem;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px;
+    background-color: #1d2124;
+}

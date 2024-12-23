@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="jp ">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選択＆カスタム検索</title>
+  <link rel="stylesheet" href="bootstrap-5.3.0-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body class="container pb-3 p-2 ">
+  <div class="d-flex  my-2 ">
+    <img src="../icons/icon.png" class="my-auto mx-2" alt="message clear button" height="28">
+    <h3 class="my-auto fs-3">選択＆カスタム検索</h3>
+  </div>
+
+  <!-- ステータスの表示 -->
+  <div class="d-flex justify-content-between mt-3 mb-1 mx-1">
+    <label class="my-auto " for="blur-enabled">選択＆カスタム検索 を有効にする</label>
+    <div class="form-check form-switch form-check-reverse me-3">
+      <input class="form-check-input" type="checkbox" role="switch" id="enabled">
+    </div>
+  </div>
+
+  <!-- メニュータブ -->
+  <ul class="nav nav-underline mb-2 mx-1" id="myTab" role="tablist">
+    <li class="nav-item " role="presentation">
+      <a class="nav-link active p-1" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab"
+        aria-controls="settings " aria-selected="true">設定</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link p-1" id="description-tab" data-bs-toggle="tab" href="#description" role="tab"
+        aria-controls="description" aria-selected="false">概要</a>
+    </li>
+    <li class="nav-item " role="presentation">
+      <a class="nav-link p-1" id="tutorial-tab" data-bs-toggle="tab" href="#tutorial" role="tab"
+        aria-controls="tutorial" aria-selected="false">チュートリアル</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link  p-1" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info"
+        aria-selected="false">情報</a>
+    </li>
+  </ul>
+
+
+  <div class="tab-content" id="myTabContent">
+
+    <!-- 設定 -->
+    <div class="tab-pane fade mt-2 mx-2 show active" id="settings" role="tabpanel" style="margin-bottom: 180px;"
+      aria-labelledby="settings-tab">
+      <div id="settings-preview">
+        <h5 class="m-0">プレビュー</h5>
+
+      </div>
+      <hr class="mt-1">
+      <h5>検索サイト登録</h5>
+      <p class="m-1">1. 検索したいサイトで一度検索を行ってください。</p>
+      <p class="m-1">2. 検索結果のURLを下のフォームに入力してください。</p>
+      <form id="urlForm" class="mb-3 d">
+        <label for="searchUrl" class="form-label">検索結果のURL</label>
+        <div class="d-flex text-nowrap">
+          <input type="url" class="form-control me-1 form-control-sm" id="searchUrl"
+            placeholder="例: https://www.google.com/search?q=sample" required>
+          <button type="submit" class="btn btn-primary ">解析する</button>
+        </div>
+      </form>
+
+      <div id="resultSection" class="d-none">
+        <p><strong>検索形式:</strong> <span id="searchType"></span></p>
+        <div id="paramSection" class="d-none">
+          <label for="paramSelect" class="form-label">検索に使用するパラメータを選択してください:</label>
+          <select id="paramSelect" class="form-select"></select>
+          <div class="d-flex justify-content-end"><button id="registerButton" class=" btn btn-success mt-3">登録</button>
+          </div>
+        </div>
+        <div id="templateSection" class=" d-none">
+          <p class="m-0"><strong>検索テンプレート:</strong><br>
+            <span id="searchTemplate"></span>
+          </p>
+          を追加しました
+        </div>
+      </div>
+    </div>
+
+    <!-- 概要 -->
+    <div class="tab-pane fade mt-2 mx-2" id="description" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="description-tab">
+      <div>
+        <h5>概要</h5>
+        <p class="my-1 fw-bold">説明:</p>
+        <p>
+          このChrome拡張機能を使えば，○○できます。
+        </p>
+        <p class="my-1 fw-bold">拡張機能の主な特徴:</p>
+        <p class="mt-1">機能の説明を書く</p>
+        <p class="my-1 fw-bold">注意点:</p>
+        <p class="mt-1">注意点を書く</p>
+      </div>
+    </div>
+
+    <!-- チュートリアル -->
+    <div class="tab-pane fade mt-2 mx-2" id="tutorial" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="tutorial-tab">
+      <p class="mb-1 fw-bold">
+        拡張機能を有効にする
+      <ol>
+        <li>PCで Chrome を開きます。</li>
+        <li>右上の [拡張機能] <img src="https://storage.googleapis.com/support-kms-prod/pPIeCzvFrMFIBxrrrWuHfxU58Rx9xBLyyv7F"
+            alt="拡張機能" height="18"> を選択します。</li>
+        <li>「Sample - サンプル」を選択します。（固定を指定しておくと，常に表示されます）</li>
+      </ol>
+      </p>
+
+      <p class="mb-1 fw-bold">
+        Sampleを有効にする
+      </p>
+      <ul class="m-1">
+        <li>拡張機能のポップアップを開き，「Sampleを有効にする」のトグルボタンをクリック</li>
+        <li> </li>
+        <li></li>
+      </ul>
+      <div class="mb-3">無効にする場合も同じ操作を行ってください。</div>
+      <p class="mb-1 fw-bold">
+        設定
+      </p>
+      <ul>
+        <li>
+
+        </li>
+        <li>
+
+        </li>
+        <li>
+
+        </li>
+      </ul>
+      <p class="mb-1 fw-bold">
+        操作方法
+      </p>
+      <ul>
+        <li>
+
+        </li>
+        <li>
+
+        </li>
+      </ul>
+    </div>
+
+    <!-- 詳細情報 -->
+    <div class="tab-pane fade mt-2 mx-2" id="info" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="info-tab">
+      <ul class="list-group list-group-flush">
+        <h5 class="pt-3 ps-2 mb-2">詳細</h5>
+
+        <li class="list-group-item">
+          <a class=""
+            href="https://chromewebstore.google.com/detail/meet-captions-logger-meet/ngbmoalopgfhbfkjidlblfeheehaniie?authuser=0&hl=ja"
+            id="store_link">ストアページに移動:</a>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">名前:</p>
+          <p class="m-0" id="extension-name"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">説明: </p>
+
+          <p class="m-0" id="extension-description"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">バージョン: </p>
+          <p class="m-0" id="extension-version"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">ID: </p>
+          <p class="m-0" id="extension-id"></p>
+        </li>
+        <li class="list-group-item">
+          <p>権限</p>
+        </li>
+        <li class="list-group-item">
+          <p>サイトへのアクセス:</p>
+          <p id="permission-info">アクセスしたウェブサイト上にある自分の全データの読み取りと変更をこの拡張機能に許可します。</p>
+          <span id="site-access">Checking...</span>
+        </li>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">シークレット モードでの実行を許可する: </p>
+          <p class="m-0" id="incognito-enabled"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">言語: </p>
+          <p class="m-0">日本語 </p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">提供元: </p>
+          <p class="m-0"> </p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">デベロッパー: </p>
+          <p class="m-0">example@example.com </p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">GitHub: </p>
+          <a class="m-0" id="github-link"
+            href="https://github.com/yhotta240/easy-web-starter-kit-jp">https://github.com/yhotta240/easy-web-starter-kit-jp
+          </a>
+        </li>
+        <li class="list-group-item">
+        </li>
+      </ul>
+      <div class="ps-0 " style="margin-bottom: 180px;">
+        <h5 class="ps-1">プライバシー</h5>
+        <p class="ps-3">お客様のデータを収集または使用しないことを表明しています。</p>
+        <p class="ps-3">お客様のデータについて以下を宣言します。</p>
+        <div class="m-2">
+          <ul>
+            <li>
+              承認されている以外の用途で第三者に販売しないこと
+            </li>
+            <li>
+              アイテムの中心機能と関係のない目的で使用または転送しないこと
+            </li>
+            <li>
+              信用力を判断する目的または融資目的で使用または転送しないこと
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- 固定フッターとしての開閉パネル -->
+  <div class="fixed-bottom bg-dark text-white">
+    <button class="btn btn-dark btn-sm p-0 w-100" id="panelButton">
+      メッセージパネルを開く
+    </button>
+    <!-- メッセージ -->
+    <div id="messagePanel" class="bg-light text-dark p-1 overflow-auto">
+      <div class="d-flex justify-content-between">
+        <div class="fw-light py-auto">メッセージ</div>
+        <button type="button" class="btn btn-light btn-sm" id="messageClearButton">
+          <img src="../icons/list_clear.png" alt="message clear button" height="20">
+        </button>
+      </div>
+
+      <div id="message" style="border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+
+  <!-- スクリプトのリンク -->
+  <script src="bootstrap-5.3.0-dist/js/bootstrap.bundle.min.js"></script>
+  <script src="popup.js"></script>
+</body>
