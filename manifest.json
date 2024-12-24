@@ -6,7 +6,7 @@
   "icons": {
     "48": "icons/icon.png"
   },
-  "permissions": ["contextMenus", "storage", "scripting"],
+  "permissions": ["contextMenus", "storage"],
   "action": {
     "default_popup": "popup/popup.html"
   },
