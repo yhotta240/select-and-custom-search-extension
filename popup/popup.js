@@ -31,11 +31,12 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
 customSearchPreview();
 function customSearchPreview() {
   const selBoxGroup = document.createElement('div');
-  const iconNum = 8;
-  const gap = 6;
-  const padding = 6;
+  const iconNum = 7;
+  const gap = 2;
+  const groupPadding = 6;
+  const padding = 4;
   const buttonWidth = 20;
-  const maxWidth = iconNum * (buttonWidth + gap) - gap + padding * 2;
+  const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
   console.log("maxWidth", maxWidth);
   Object.assign(selBoxGroup.style, {
     // position: "absolute",
@@ -70,7 +71,7 @@ function customSearchPreview() {
     selBox.id = site.name;
     selBox.target = "_blank";
 
-    selBox.className = `btn1 btn-dark1  selBoxGroup btn-icon1 m-auto1`;
+    selBox.className = `btn1 btn-light1  selBoxGroup btn-icon1 m-auto1`;
     selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
     selBoxGroup.append(selBox);
     selBox.addEventListener('click', () => {
@@ -85,7 +86,7 @@ function customSearchPreview() {
 
     selBox.addEventListener('dragend', () => {
       selBox.classList.remove('dragging');
-      document.querySelectorAll('.selBoxGroup a').forEach(el => el.classList.remove('over'));
+      document.querySelectorAll('.selBoxGroup').forEach(el => el.classList.remove('over'));
     });
 
     selBox.addEventListener('dragover', (e) => {
@@ -196,6 +197,8 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 // DOMの読み込み完了を監視し，完了後に実行
 document.addEventListener('DOMContentLoaded', function () {
 
+  const searchBtnGroup = document.querySelector('.my-extension-root.btn-group1');
+  const searchButton = document.querySelector('#search-box a');
   const changeThemeIcon = document.querySelector('#change-theme-icon');
 
   function themeChange(isClicking = false) {
@@ -220,9 +223,24 @@ document.addEventListener('DOMContentLoaded', function () {
       `;
 
       const changeTheme = document.getElementById('change-theme');
+      changeTheme.checked = newTheme === 'dark';
+      if (newTheme === 'dark') {
+        searchBtnGroup.style.backgroundColor = '#292e33';
+        searchBtnGroup.querySelectorAll('*').forEach(child => {
+          child.classList.remove('btn-light1');
+          child.classList.add('btn-dark1');
+        });
+        console.log("searchButton.classList dark", searchButton.classList);
+      } else {
+        searchBtnGroup.style.backgroundColor = '#ffffff';
+        searchBtnGroup.querySelectorAll('*').forEach(child => {
+          child.classList.remove('btn-dark1');
+          child.classList.add('btn-light1');
+        });
+        console.log("searchButton.classList light", searchButton.classList);
+      }
+      changeThemeIcon.innerHTML = newTheme === 'light' ? lightIcon : darkIcon;
       chrome.storage.local.set({ theme: newTheme }, () => {
-        changeTheme.checked = newTheme === 'dark';
-        changeThemeIcon.innerHTML = newTheme === 'light' ? lightIcon : darkIcon;
       });
     });
   }
