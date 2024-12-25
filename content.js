@@ -105,6 +105,7 @@ function eventHandler() {
   chrome.storage.local.set({ selectedText: selectedText }, () => {
     console.log("ok")
   });
+  themeChange(false);
   // Search(selectedText);
 };
 
@@ -122,10 +123,11 @@ function customSearch(selectedText) {
   // オーバーレイ要素を作成
   const selBoxGroup = document.createElement('div');
   const iconNum = 8;
-  const gap = 6;
-  const padding = 6;
+  const gap = 2;
+  const groupPadding = 6;
+  const padding = 4;
   const buttonWidth = 20;
-  const maxWidth = iconNum * (buttonWidth + gap) - gap + padding * 2;
+  const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
   console.log("maxWidth", maxWidth);
   Object.assign(selBoxGroup.style, {
     position: "absolute",
@@ -164,7 +166,7 @@ function customSearch(selectedText) {
     selBox.id = site.name;
     selBox.target = "_blank";
 
-    selBox.className = `btn1 btn-dark1 btn-icon1 m-auto1`;
+    selBox.className = `btn1 btn-light1 btn-icon1 m-auto1`;
     selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
     selBoxGroup.append(selBox);
     selBox.addEventListener('click', () => {
@@ -206,3 +208,39 @@ function autoSearch(selectedText) {
   }
 }
 
+
+
+
+function themeChange(isClicking = false) {
+  const searchBtnGroup = document.querySelector('.my-extension-root.btn-group1');
+  const searchButton = document.querySelector('#search-box a');
+  if (!searchBtnGroup && !searchButton) { return; }
+  console.log("isClicking", isClicking);
+  chrome.storage.local.get(['theme'], (data) => {
+    console.log("data.theme", data.theme);
+    const newTheme = data.theme;
+    console.log("newTheme", newTheme);
+    // const changeTheme = document.getElementById('change-theme');
+    // changeTheme.checked = newTheme === 'dark';
+    if (newTheme === 'dark') {
+      searchBtnGroup.style.backgroundColor = '#292e33';
+      searchBtnGroup.querySelectorAll('*').forEach(child => {
+        child.classList.remove('btn-light1');
+        child.classList.add('btn-dark1');
+      });
+      console.log("searchButton.classList dark", searchButton.classList);
+    } else {
+      searchBtnGroup.style.backgroundColor = '#ffffff';
+      searchBtnGroup.querySelectorAll('*').forEach(child => {
+        child.classList.remove('btn-dark1');
+        child.classList.add('btn-light1');
+      });
+      console.log("searchButton.classList light", searchButton.classList);
+    }
+    chrome.storage.local.set({ theme: newTheme }, () => {
+    });
+  });
+}
+
+// 初期化
+// themeChange(false);
