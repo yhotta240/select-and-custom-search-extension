@@ -121,11 +121,18 @@ function customSearch(selectedText) {
   console.log("rect.bottom + window.scrollY + 100", rect.bottom + window.scrollY + 100);
   // オーバーレイ要素を作成
   const selBoxGroup = document.createElement('div');
+  const iconNum = 8;
+  const gap = 6;
+  const padding = 6;
+  const buttonWidth = 20;
+  const maxWidth = iconNum * (buttonWidth + gap) - gap + padding * 2;
+  console.log("maxWidth", maxWidth);
   Object.assign(selBoxGroup.style, {
     position: "absolute",
     top: `${rect.bottom + window.scrollY + 10}px`, // 選択範囲の下に表示
     left: `${rect.left + window.scrollX}px`,
     pointerEvents: 'absolute', // クリック可能にする
+    maxWidth: `${maxWidth}px`,
   });
   selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1";
   selBoxGroup.role = "group";
@@ -134,7 +141,7 @@ function customSearch(selectedText) {
 
   const sites = [
     { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
-    { name: "youtubecom", url: "https://youtube.com", searchQuery: "search?q=" },
+    { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "search?q=" },
     { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
     { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "search?q=", inputForm: "input[name='q']", inputButton: "button[class='DocSearch DocSearch-Button']" },
     { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
