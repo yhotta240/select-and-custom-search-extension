@@ -3,7 +3,8 @@
     z-index: 2147483647;
     border-radius: 0.5rem;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px;
-    background-color: #1d2124;
+    /* background-color: #1d2124; */
+    background-color: #fafafa;
     vertical-align: middle;
     /* max-width: 250px; */
     height: auto;
@@ -13,7 +14,7 @@
     justify-content: flex-start;
     /* 左寄せ */
     padding: 6px;
-    gap: 6px;
+    gap: 2px;
     /* margin-left: auto; */
 }
 
@@ -27,7 +28,6 @@
     vertical-align: middle;
     border: 1px solid transparent;
     border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
     line-height: 1.5;
     transition: all 0.2s ease-in-out;
     text-decoration: none;
@@ -36,17 +36,30 @@
 }
 
 /* ダークテーマのボタン */
+.my-extension-root .btn-light1 {
+    /* border: 1px solid #535c66; */
+    background-color: #ffffff;
+    color: #0e0d0d;
+}
+
+.my-extension-root .btn-light1:hover {
+    background-color: #c6cdd6;
+    /* border-color: #1d2124; */
+    color: #0c0c0c;
+}
+
 .my-extension-root .btn-dark1 {
-    background-color: #535c66;
+    background-color: #292e33;
     color: #ffffff;
-    border-color: #535c66;
+    /* border-color: #444e58; */
 }
 
 .my-extension-root .btn-dark1:hover {
-    background-color: #23272b;
-    border-color: #1d2124;
+    background-color: #15191f;
+    /* border-color: #1d2124; */
     color: #ffffff;
 }
+
 
 /* アイコン付きボタン */
 .my-extension-root .btn-icon1 {
@@ -55,13 +68,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    padding: 4px;
 }
 
 .my-extension-root .btn-icon1 img {
     display: block;
     height: 20px;
 }
+
 /* ...existing code... */
 
 .dragging {
