@@ -105,90 +105,118 @@ function eventHandler() {
   chrome.storage.local.set({ selectedText: selectedText }, () => {
     console.log("ok")
   });
-  themeChange(false);
-  changeIconNum();
-  // Search(selectedText);
 };
-
-
 
 function customSearch(selectedText) {
   // 選択範囲を取得
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
 
+
   const range = selection.getRangeAt(0); // 選択範囲を取得
   const rect = range.getBoundingClientRect(); // 選択範囲の座標を取得
   console.log("rect", rect);
   console.log("rect.bottom + window.scrollY + 100", rect.bottom + window.scrollY + 100);
   // オーバーレイ要素を作成
-  const selBoxGroup = document.createElement('div');
-  const iconNum = 7;
-  const gap = 2;
-  const groupPadding = 6;
-  const padding = 4;
-  const buttonWidth = 20;
-  const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
-  console.log("maxWidth", maxWidth);
-  Object.assign(selBoxGroup.style, {
-    position: "absolute",
-    top: `${rect.bottom + window.scrollY + 10}px`, // 選択範囲の下に表示
-    left: `${rect.left + window.scrollX}px`,
-    pointerEvents: 'absolute', // クリック可能にする
-    maxWidth: `${maxWidth}px`,
-  });
-  selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1";
-  selBoxGroup.role = "group";
-  selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
-  selBoxGroup.id = "search-box"
+  chrome.storage.local.get(['selectPosition', 'theme', 'iconNum'], (data) => {
+    console.log("data.selectPosition", data.selectPosition);
+    const selectPosition = data.selectPosition;
+    const newTheme = data.theme;
+    const iconNum = data.iconNum;
 
-  const sites = [
-    { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
-    { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "search?q=" },
-    { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
-    { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "search?q=", inputForm: "input[name='q']", inputButton: "button[class='DocSearch DocSearch-Button']" },
-    { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
-    { name: "qiitacom", url: "https://qiita.com", searchQuery: "search?q=" },
-    { name: "chatgptcom", url: "https://chatgpt.com", searchQuery: "search?q=", },
-    { name: "tverjp", url: "https://tver.jp", searchQuery: "search?q=", inputForm: "input[name='keywordInput']" },
-    { name: "chromewebstoregooglecom", url: "https://chromewebstore.google.com", searchQuery: "search?q=" },
-    { name: "wwwpixivnet", url: "https://www.pixiv.net", searchQuery: "search?q=" },
-    { name: "x.com", url: "https://x.com", searchQuery: "search?q=" },
-  ];
-  chrome.storage.local.set({ sites: sites }, () => {
-    console.log("sites:ok")
-  });
-  sites.forEach((site, index) => {
-    const selBox = document.createElement("a");
-    console.log("site", site);
-    const iconUrl = getFaviconUrl(site.url);
-    console.log("iconURL", iconUrl);
-    selBox.href = site.url;
-    selBox.id = site.name;
-    selBox.target = "_blank";
+    const selBoxGroup = document.createElement('div');
+    // const iconNum = 7;
+    const gap = 2;
+    const groupPadding = 6;
+    const padding = 4;
+    const buttonWidth = 20;
+    const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
+    console.log("maxWidth", maxWidth);
 
-    selBox.className = `btn1 btn-light1 btn-icon1 m-auto1`;
-    selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
-    selBoxGroup.append(selBox);
-    selBox.addEventListener('click', () => {
-      const searchUrl = `${site.url}/${site.searchQuery}${encodeURIComponent(selectedText)}`;
-      window.open(searchUrl, '_blank');
-    });
-  });
-
-  // ボタングループのHTML
-  console.log("selBoxGroup", selBoxGroup);
-  console.log("selBoxGroup.children", selBoxGroup.children);
-
-  // bodyに追加
-  document.body.appendChild(selBoxGroup);
-
-  // オーバーレイを消す処理（クリックで削除）
-  document.addEventListener('mousedown', function removeOverlay(e) {
-    if (!selBoxGroup.contains(e.target)) {
-      selBoxGroup.remove();
-      document.removeEventListener('mousedown', removeOverlay);
+    let fromTop;
+    let fromLeft;
+    let position = "fixed";
+    if (selectPosition === 'default') {
+      fromTop = `${rect.bottom + window.scrollY + 10}px`; // 選択範囲の下に表示
+      fromLeft = `${rect.left + window.scrollX}px`;
+      position = "absolute";
+    } if (selectPosition === 'top-left') {
+      fromTop = `0px`;
+      fromLeft = `0px`;
+    } if (selectPosition === 'top-right') {
+      fromTop = `0px`;
+      fromLeft = `${window.innerWidth - maxWidth}px`;
+    } if (selectPosition === 'bottom-left') {
+      fromTop = `${window.innerHeight - rect.height}px`;
+      fromLeft = `0px`;
+    } if (selectPosition === 'bottom-right') {
+      fromTop = `${window.innerHeight - rect.height}px`;
+      fromLeft = `${window.innerWidth - maxWidth}px`;
     }
+
+    const backgroundColor = newTheme === 'dark' ? '#292e33' : '#ffffff';
+    const btnThemeColor = newTheme === 'dark' ? 'btn-dark1' : 'btn-light1';
+    Object.assign(selBoxGroup.style, {
+      position: position,
+      top: fromTop,
+      left: fromLeft,
+      pointerEvents: 'absolute', // クリック可能にする
+      maxWidth: `${maxWidth}px`,
+      backgroundColor: backgroundColor,
+    });
+    selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1";
+    selBoxGroup.role = "group";
+    selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
+    selBoxGroup.id = "search-box"
+
+    const sites = [
+      { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
+      { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "results?search_query=" },
+      { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
+      { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "search?q=", inputForm: "input[name='q']", inputButton: "button[class='DocSearch DocSearch-Button']" },
+      { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
+      { name: "qiitacom", url: "https://qiita.com", searchQuery: "search?q=" },
+      { name: "chatgptcom", url: "https://chatgpt.com", searchQuery: "search?q=", },
+      { name: "tverjp", url: "https://tver.jp", searchQuery: "search?q=", inputForm: "input[name='keywordInput']" },
+      { name: "chromewebstoregooglecom", url: "https://chromewebstore.google.com", searchQuery: "search?q=" },
+      { name: "wwwpixivnet", url: "https://www.pixiv.net", searchQuery: "search?q=" },
+      { name: "x.com", url: "https://x.com", searchQuery: "search?q=" },
+    ];
+    chrome.storage.local.set({ sites: sites }, () => {
+      console.log("sites:ok")
+    });
+    sites.forEach((site, index) => {
+      const selBox = document.createElement("a");
+      // console.log("site", site);
+      const iconUrl = getFaviconUrl(site.url);
+      console.log("iconURL", iconUrl);
+      selBox.href = site.url;
+      selBox.id = site.name;
+      selBox.target = "_blank";
+
+      selBox.className = `btn1 btn-icon1 m-auto1 ${btnThemeColor}`;
+      selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
+      selBoxGroup.append(selBox);
+      selBox.addEventListener('click', () => {
+        const searchUrl = `${site.url}/${site.searchQuery}${encodeURIComponent(selectedText)}`;
+        window.open(searchUrl, '_blank');
+      });
+    });
+
+    // ボタングループのHTML
+    console.log("selBoxGroup", selBoxGroup);
+    console.log("selBoxGroup.children", selBoxGroup.children);
+
+    // bodyに追加
+    document.body.appendChild(selBoxGroup);
+
+    // オーバーレイを消す処理（クリックで削除）
+    document.addEventListener('mousedown', function removeOverlay(e) {
+      if (!selBoxGroup.contains(e.target)) {
+        selBoxGroup.remove();
+        document.removeEventListener('mousedown', removeOverlay);
+      }
+    });
   });
 
 }
@@ -210,50 +238,3 @@ function autoSearch(selectedText) {
 }
 
 
-
-
-function themeChange(isClicking = false) {
-  const searchBtnGroup = document.querySelector('.my-extension-root.btn-group1');
-  const searchButton = document.querySelector('#search-box a');
-  if (!searchBtnGroup && !searchButton) { return; }
-  console.log("isClicking", isClicking);
-  chrome.storage.local.get(['theme'], (data) => {
-    console.log("data.theme", data.theme);
-    const newTheme = data.theme;
-    console.log("newTheme", newTheme);
-    // const changeTheme = document.getElementById('change-theme');
-    // changeTheme.checked = newTheme === 'dark';
-    if (newTheme === 'dark') {
-      searchBtnGroup.style.backgroundColor = '#292e33';
-      searchBtnGroup.querySelectorAll('*').forEach(child => {
-        child.classList.remove('btn-light1');
-        child.classList.add('btn-dark1');
-      });
-      console.log("searchButton.classList dark", searchButton.classList);
-    } else {
-      searchBtnGroup.style.backgroundColor = '#ffffff';
-      searchBtnGroup.querySelectorAll('*').forEach(child => {
-        child.classList.remove('btn-dark1');
-        child.classList.add('btn-light1');
-      });
-      console.log("searchButton.classList light", searchButton.classList);
-    }
-    chrome.storage.local.set({ theme: newTheme }, () => {
-    });
-  });
-}
-
-
-function changeIconNum() {
-  chrome.storage.local.get(['iconNum'], (data) => {
-    const newIconNum = data.iconNum;
-    const selBoxGroup = document.querySelector('.my-extension-root.btn-group1');
-    if (!selBoxGroup) { return; }
-    const gap = 2;
-    const groupPadding = 6;
-    const padding = 4;
-    const buttonWidth = 20;
-    const maxWidth = newIconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
-    selBoxGroup.style.maxWidth = `${maxWidth}px`;
-  });
-}
