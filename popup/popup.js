@@ -256,9 +256,13 @@ changeThemeIcon.addEventListener('click', () => themeChange(true));
 // DOMの読み込み完了を監視し，完了後に実行
 document.addEventListener('DOMContentLoaded', function () {
   const selectPosition = document.querySelector('#select-position');
+  const searchBoxDistance = document.querySelector('#search-box-distance');
 
   function updateSelectPosition(value, isSelect = false) {
     console.log(`選択された位置: ${value}`);
+    if (value === 'default') {
+      searchBoxDistance.classList.remove('d-none');
+    }
     if (!isSelect) {
       chrome.storage.local.get(['selectPosition'], (data) => {
         value = data.selectPosition;
@@ -280,9 +284,34 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   updateSelectPosition(selectPosition.value, false);
 
+  // 選択テキストの下に表示する検索ボックスの設定
+  const textDistanceInput = document.querySelector('#select-text-distance');
+  const textDistanceLabel = document.querySelector('#select-text-distance-label');
 
-  selectPosition.value = 'top';
+  function updateTextDistance(value, isInput = false) {
+    if (!isInput) {
+      chrome.storage.local.get(['textDistance'], (data) => {
+        value = data.textDistance ?? 10;
+        console.log("data.textDistance",typeof data.textDistance);
+        chrome.storage.local.set({ textDistance: value }, () => {
+          textDistanceLabel.textContent = value;
+          textDistanceInput.value = value;
+        });
+      });
+    } else {
+      textDistanceLabel.textContent = value;
+      textDistanceInput.value = value;
+      chrome.storage.local.set({ textDistance: value }, () => {
+        messageOutput(dateTime(), `テキストの下距離が ${value} に変更されました`);
+      });
+    }
+  }
 
+  textDistanceInput.addEventListener('input', (event) => updateTextDistance(event.target.value, true));
+  updateTextDistance(textDistanceInput.value, false);
+
+
+  // アイコンの個数を設定
   const iconNumRange = document.querySelector('#icon-num-range');
   const iconNumText = document.querySelector('#icon-num-text');
 
