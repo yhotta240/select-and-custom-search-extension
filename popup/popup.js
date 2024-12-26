@@ -53,7 +53,7 @@ function customSearchPreview(iconNum) {
 
   const sites = [
     { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
-    { name: "youtubecom", url: "https://youtube.com", searchQuery: "results?search_query=" },
+    { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "results?search_query=" },
     { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
     { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "search?q=", inputForm: "input[name='q']", inputButton: "button[class='DocSearch DocSearch-Button']" },
     { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
