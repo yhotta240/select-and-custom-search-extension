@@ -118,9 +118,10 @@ function customSearch(selectedText) {
   console.log("rect", rect);
   console.log("rect.bottom + window.scrollY + 100", rect.bottom + window.scrollY + 100);
   // オーバーレイ要素を作成
-  chrome.storage.local.get(['selectPosition', 'theme', 'iconNum'], (data) => {
+  chrome.storage.local.get(['selectPosition', 'textDistance', 'theme', 'iconNum'], (data) => {
     console.log("data.selectPosition", data.selectPosition);
     const selectPosition = data.selectPosition;
+    const textDistance = Number(data.textDistance);
     const newTheme = data.theme;
     const iconNum = data.iconNum;
 
@@ -137,7 +138,7 @@ function customSearch(selectedText) {
     let fromLeft;
     let position = "fixed";
     if (selectPosition === 'default') {
-      fromTop = `${rect.bottom + window.scrollY + 10}px`; // 選択範囲の下に表示
+      fromTop = `${rect.bottom + window.scrollY + textDistance}px`; // 選択範囲の下に表示
       fromLeft = `${rect.left + window.scrollX}px`;
       position = "absolute";
     } if (selectPosition === 'top-left') {
