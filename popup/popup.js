@@ -13,7 +13,7 @@ enabledElement.addEventListener('change', (event) => {
   // 現在の有効/無効状態をストレージに保存
   chrome.storage.local.set({ isEnabled: isEnabled }, () => {
     // 有効/無効状態に応じてメッセージを出力
-    messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索は 無効になっています` : `選択＆カスタム検索 は無効になっています`);
+    messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 は無効になっています` : `選択＆カスタム検索 は無効になっています`);
   });
 });
 
@@ -29,17 +29,20 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
 });
 
 customSearchPreview();
-function customSearchPreview() {
+function customSearchPreview(iconNum) {
   const selBoxGroup = document.createElement('div');
-  const iconNum = 7;
+  // const iconNum = 7;
   const gap = 2;
   const groupPadding = 6;
   const padding = 4;
   const buttonWidth = 20;
   const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
   console.log("maxWidth", maxWidth);
+
+
   Object.assign(selBoxGroup.style, {
     // position: "absolute",
+    backgroundColor: '#ffffff',
     pointerEvents: 'absolute', // クリック可能にする
     maxWidth: `${maxWidth}px`,
   });
@@ -71,7 +74,7 @@ function customSearchPreview() {
     selBox.id = site.name;
     selBox.target = "_blank";
 
-    selBox.className = `btn1 btn-light1  selBoxGroup btn-icon1 m-auto1`;
+    selBox.className = `btn1 selBoxGroup btn-icon1 m-auto1 btn-light1`;
     selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
     selBoxGroup.append(selBox);
     selBox.addEventListener('click', () => {
@@ -132,8 +135,9 @@ function customSearchPreview() {
   const previewElement = document.querySelector("#settings-preview");
 
   // 最初に挿入
-  previewElement.appendChild(selBoxGroup);
-
+  // previewElement.appendChild(selBoxGroup);
+  previewElement.innerHTML = selBoxGroup.outerHTML;
+  themeChange(false);
 }
 
 document.getElementById("urlForm").addEventListener("submit", function (e) {
@@ -194,62 +198,90 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
   };
 });
 
-// DOMの読み込み完了を監視し，完了後に実行
-document.addEventListener('DOMContentLoaded', function () {
-
+const changeThemeIcon = document.querySelector('#change-theme-icon');
+function themeChange(isClicking = false) {
   const searchBtnGroup = document.querySelector('.my-extension-root.btn-group1');
   const searchButton = document.querySelector('#search-box a');
-  const changeThemeIcon = document.querySelector('#change-theme-icon');
+  console.log("isClicking", isClicking);
+  chrome.storage.local.get(['theme'], (data) => {
+    console.log("data.theme", data.theme);
+    const currentTheme = data.theme;
+    const newTheme = isClicking ? currentTheme === 'light' ? 'dark' : 'light' : currentTheme;
+    console.log("newTheme", newTheme);
+    // アイコンの切り替え
+    const lightIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brightness-high-fill" viewBox="0 0 16 16">
+        <path d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
+      </svg>
+    `;
 
-  function themeChange(isClicking = false) {
-    console.log("isClicking", isClicking);
-    chrome.storage.local.get(['theme'], (data) => {
-      console.log("data.theme", data.theme);
-      const currentTheme = data.theme;
-      const newTheme = isClicking ? currentTheme === 'light' ? 'dark' : 'light' : currentTheme;
-      console.log("newTheme", newTheme);
-      // アイコンの切り替え
-      const lightIcon = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brightness-high-fill" viewBox="0 0 16 16">
-          <path d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
-        </svg>
-      `;
+    const darkIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-stars-fill" viewBox="0 0 16 16">
+        <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278" />
+        <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z" />
+      </svg>
+    `;
 
-      const darkIcon = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-stars-fill" viewBox="0 0 16 16">
-          <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278" />
-          <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z" />
-        </svg>
-      `;
-
-      const changeTheme = document.getElementById('change-theme');
-      changeTheme.checked = newTheme === 'dark';
-      if (newTheme === 'dark') {
-        searchBtnGroup.style.backgroundColor = '#292e33';
-        searchBtnGroup.querySelectorAll('*').forEach(child => {
-          child.classList.remove('btn-light1');
-          child.classList.add('btn-dark1');
-        });
-        console.log("searchButton.classList dark", searchButton.classList);
-      } else {
-        searchBtnGroup.style.backgroundColor = '#ffffff';
-        searchBtnGroup.querySelectorAll('*').forEach(child => {
-          child.classList.remove('btn-dark1');
-          child.classList.add('btn-light1');
-        });
-        console.log("searchButton.classList light", searchButton.classList);
-      }
-      changeThemeIcon.innerHTML = newTheme === 'light' ? lightIcon : darkIcon;
-      chrome.storage.local.set({ theme: newTheme }, () => {
+    const changeTheme = document.getElementById('change-theme');
+    changeTheme.checked = newTheme === 'dark';
+    if (newTheme === 'dark') {
+      searchBtnGroup.style.backgroundColor = '#292e33';
+      // const btnThemeColor = "btn-dark1";
+      // customSearchPreview(btnThemeColor);
+      searchBtnGroup.querySelectorAll('*').forEach(child => {
+        child.classList.remove('btn-light1');
+        child.classList.add('btn-dark1');
       });
+      console.log("searchButton.classList dark", searchButton.classList);
+    } else {
+      searchBtnGroup.style.backgroundColor = '#ffffff';
+      // const btnThemeColor = "btn-light1";
+      // customSearchPreview(btnThemeColor);
+      searchBtnGroup.querySelectorAll('*').forEach(child => {
+        child.classList.remove('btn-dark1');
+        child.classList.add('btn-light1');
+      });
+      console.log("searchButton.classList light", searchButton.classList);
+    }
+    changeThemeIcon.innerHTML = newTheme === 'light' ? lightIcon : darkIcon;
+    chrome.storage.local.set({ theme: newTheme }, () => {
     });
+  });
+}
+// 初期化
+themeChange(false);
+changeThemeIcon.addEventListener('click', () => themeChange(true));
+
+
+// DOMの読み込み完了を監視し，完了後に実行
+document.addEventListener('DOMContentLoaded', function () {
+  const iconNumRange = document.querySelector('#icon-num-range');
+  const iconNumText = document.querySelector('#icon-num-text');
+
+  function updateIconNumText(value, isInput = false) {
+    console.log(`選択されたアイコンの個数: ${value}`);
+    if (!isInput) {
+      chrome.storage.local.get(['iconNum'], (data) => {
+        console.log("data.iconNum", data.iconNum);
+        value = data.iconNum;
+        iconNumText.textContent = value;
+        iconNumRange.value = value;
+        customSearchPreview(value);
+      });
+    } else {
+      iconNumText.textContent = value;
+      customSearchPreview(value);
+      chrome.storage.local.set({ iconNum: value }, () => {
+        console.log(`アイコンの個数が ${value} に変更されました`);
+        messageOutput(dateTime(), `アイコンの個数が ${value} に変更されました`);
+      });
+    }
   }
 
-  // 初期化
-  themeChange(false);
-  changeThemeIcon.addEventListener('click', () => themeChange(true));
-
-
+  iconNumRange.addEventListener('input', (event) => {
+    updateIconNumText(event.target.value, true);
+  });
+  updateIconNumText(iconNumRange.value, false);
 
   // メッセージパネルの表示・非表示を切り替える
   panelButton.addEventListener('click', function () {
