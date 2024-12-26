@@ -53,7 +53,7 @@ function customSearchPreview(iconNum) {
 
   const sites = [
     { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
-    { name: "youtubecom", url: "https://youtube.com", searchQuery: "search?q=" },
+    { name: "youtubecom", url: "https://youtube.com", searchQuery: "results?search_query=" },
     { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
     { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "search?q=", inputForm: "input[name='q']", inputButton: "button[class='DocSearch DocSearch-Button']" },
     { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
@@ -255,6 +255,34 @@ changeThemeIcon.addEventListener('click', () => themeChange(true));
 
 // DOMの読み込み完了を監視し，完了後に実行
 document.addEventListener('DOMContentLoaded', function () {
+  const selectPosition = document.querySelector('#select-position');
+
+  function updateSelectPosition(value, isSelect = false) {
+    console.log(`選択された位置: ${value}`);
+    if (!isSelect) {
+      chrome.storage.local.get(['selectPosition'], (data) => {
+        value = data.selectPosition;
+        selectPosition.value = value;
+      });
+    } else {
+      selectPosition.value = value;
+      chrome.storage.local.set({ selectPosition: value }, () => {
+        console.log(`選択された位置が ${value} に変更されました`);
+        messageOutput(dateTime(), `選択された位置が ${value} に変更されました`);
+      });
+    }
+  }
+
+  selectPosition.addEventListener('change', (event) => {
+    const selectedValue = event.target.value;
+    console.log(`選択された位置: ${selectedValue}`);
+    updateSelectPosition(selectedValue, true);
+  });
+  updateSelectPosition(selectPosition.value, false);
+
+
+  selectPosition.value = 'top';
+
   const iconNumRange = document.querySelector('#icon-num-range');
   const iconNumText = document.querySelector('#icon-num-text');
 
