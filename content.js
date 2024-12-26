@@ -106,6 +106,7 @@ function eventHandler() {
     console.log("ok")
   });
   themeChange(false);
+  changeIconNum();
   // Search(selectedText);
 };
 
@@ -122,7 +123,7 @@ function customSearch(selectedText) {
   console.log("rect.bottom + window.scrollY + 100", rect.bottom + window.scrollY + 100);
   // オーバーレイ要素を作成
   const selBoxGroup = document.createElement('div');
-  const iconNum = 8;
+  const iconNum = 7;
   const gap = 2;
   const groupPadding = 6;
   const padding = 4;
@@ -242,5 +243,17 @@ function themeChange(isClicking = false) {
   });
 }
 
-// 初期化
-// themeChange(false);
+
+function changeIconNum() {
+  chrome.storage.local.get(['iconNum'], (data) => {
+    const newIconNum = data.iconNum;
+    const selBoxGroup = document.querySelector('.my-extension-root.btn-group1');
+    if (!selBoxGroup) { return; }
+    const gap = 2;
+    const groupPadding = 6;
+    const padding = 4;
+    const buttonWidth = 20;
+    const maxWidth = newIconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
+    selBoxGroup.style.maxWidth = `${maxWidth}px`;
+  });
+}
