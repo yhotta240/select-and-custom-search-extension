@@ -58,13 +58,12 @@
         <option value="bottom-left">ページの左下</option>
         <option value="bottom-right">ページの右下</option>
       </select>
-      <div class="row mb-2">
-        <div class="col-4">
-          <label for="icon-a-range" class="form-label m-0 text-nowrap">選択したテキストから:</label>
+      <div class="d-none" id="search-box-distance">
+        <div class="d-flex align-items-center">
+          <label for="select-text-distance" class="form-label m-0 text-nowrap">選択したテキストから:</label>
+          <p class="m-0" id="select-text-distance-label"></p>px 離す
         </div>
-        <div class="col-8">
-          <input type="range" class="form-range" min="1" max="7" step="1" id="icon-a-range">
-        </div>
+        <input type="range" class="form-range" min="0" max="15" step="1" id="select-text-distance">
       </div>
 
       <hr>
@@ -183,7 +182,7 @@
       </p>
       <ul class="">
         <li>拡張機能のポップアップを開き，「選択＆カスタム検索 をONにする」のトグルボタンをクリック
-          <div >無効にする場合も同じ操作を行ってください。</div>
+          <div>無効にする場合も同じ操作を行ってください。</div>
         </li>
       </ul>
       <p class="mb-1 fw-bold">
