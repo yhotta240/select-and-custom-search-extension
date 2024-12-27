@@ -13,7 +13,7 @@ enabledElement.addEventListener('change', (event) => {
   // 現在の有効/無効状態をストレージに保存
   chrome.storage.local.set({ isEnabled: isEnabled }, () => {
     // 有効/無効状態に応じてメッセージを出力
-    messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 は無効になっています` : `選択＆カスタム検索 は無効になっています`);
+    messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 はONになっています` : `選択＆カスタム検索 はOFFになっています`);
   });
 });
 
@@ -25,7 +25,7 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
     enabledElement.checked = isEnabled; // チェックボックス（トグルボタン）の状態を'isEnabled'の値に設定
   }
   // 有効/無効状態に応じてメッセージを出力
-  messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 は無効になっています` : `選択＆カスタム検索 は無効になっています`);
+  messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 はONになっています` : `選択＆カスタム検索 はOFFになっています`);
 });
 
 customSearchPreview();
@@ -55,7 +55,7 @@ function customSearchPreview(iconNum) {
     { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
     { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "results?search_query=" },
     { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
-    { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "search?q=", inputForm: "input[name='q']", inputButton: "button[class='DocSearch DocSearch-Button']" },
+    { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
     { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
     { name: "qiitacom", url: "https://qiita.com", searchQuery: "search?q=" },
     { name: "chatgptcom", url: "https://chatgpt.com", searchQuery: "search?q=", },
@@ -182,7 +182,7 @@ function themeChange(isClicking = false) {
   console.log("isClicking", isClicking);
   chrome.storage.local.get(['theme'], (data) => {
     console.log("data.theme", data.theme);
-    const currentTheme = data.theme;
+    const currentTheme = data.theme ?? 'light';
     const newTheme = isClicking ? currentTheme === 'light' ? 'dark' : 'light' : currentTheme;
     console.log("newTheme", newTheme);
     // アイコンの切り替え
@@ -236,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchBoxDistance = document.querySelector('#search-box-distance');
 
   function updateSelectPosition(value, isSelect = false) {
-    console.log(`選択された位置: ${value}`);
     if (value === 'default') {
       searchBoxDistance.classList.remove('d-none');
     } else {
@@ -244,13 +243,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (!isSelect) {
       chrome.storage.local.get(['selectPosition'], (data) => {
-        value = data.selectPosition;
+        value = data.selectPosition ?? 'default';
         selectPosition.value = value;
+        chrome.storage.local.set({ selectPosition: value }, () => {
+          messageOutput(dateTime(), `選択された位置が ${value} に変更されました`);
+        });
       });
     } else {
       selectPosition.value = value;
       chrome.storage.local.set({ selectPosition: value }, () => {
-        console.log(`選択された位置が ${value} に変更されました`);
         messageOutput(dateTime(), `選択された位置が ${value} に変更されました`);
       });
     }
@@ -258,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   selectPosition.addEventListener('change', (event) => {
     const selectedValue = event.target.value;
-    console.log(`選択された位置: ${selectedValue}`);
     updateSelectPosition(selectedValue, true);
   });
   updateSelectPosition(selectPosition.value, false);
@@ -271,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!isInput) {
       chrome.storage.local.get(['textDistance'], (data) => {
         value = data.textDistance ?? 10;
-        console.log("data.textDistance", typeof data.textDistance);
         chrome.storage.local.set({ textDistance: value }, () => {
           textDistanceLabel.textContent = value;
           textDistanceInput.value = value;
@@ -299,16 +298,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!isInput) {
       chrome.storage.local.get(['iconNum'], (data) => {
         console.log("data.iconNum", data.iconNum);
-        value = data.iconNum;
+        value = data.iconNum ?? 8;
         iconNumText.textContent = value;
         iconNumRange.value = value;
         customSearchPreview(value);
+        chrome.storage.local.set({ iconNum: value }, () => {
+          messageOutput(dateTime(), `アイコンの個数が ${value} に変更されました`);
+        });
       });
     } else {
       iconNumText.textContent = value;
       customSearchPreview(value);
       chrome.storage.local.set({ iconNum: value }, () => {
-        console.log(`アイコンの個数が ${value} に変更されました`);
         messageOutput(dateTime(), `アイコンの個数が ${value} に変更されました`);
       });
     }
@@ -318,6 +319,31 @@ document.addEventListener('DOMContentLoaded', function () {
     updateIconNumText(event.target.value, true);
   });
   updateIconNumText(iconNumRange.value, false);
+
+  // 検索モードの設定
+  const selectElement = document.getElementById('search-mode');
+  chrome.storage.local.get('searchMode', (data) => {
+    const value = data.searchMode ?? 'new-tab';
+    selectElement.value = value;
+    chrome.storage.local.set({ searchMode: value }, () => {
+      messageOutput(dateTime(), `検索モードが ${value} に変更されました`);
+    });
+  });
+
+  selectElement.addEventListener('change', () => {
+    chrome.storage.local.set({ searchMode: selectElement.value }, () => {
+      messageOutput(dateTime(), `検索モードが ${selectElement.value} に変更されました`);
+    });
+  });
+
+  // 検索ボックスのURLをクリアするボタン
+  const searchUrlInput = document.getElementById('searchUrl');
+  const clearButton = document.querySelector('#btn-close');
+  clearButton.addEventListener('click', function () {
+    searchUrlInput.value = '';
+  });
+
+
 
   // メッセージパネルの表示・非表示を切り替える
   panelButton.addEventListener('click', function () {
