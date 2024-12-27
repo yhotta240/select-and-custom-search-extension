@@ -53,13 +53,15 @@ function windowOnload() {
             console.log('site:', site);
             const searchInput = document.querySelector(site.inputForm);
             if (searchInput) {
+              searchInput.focus();
               searchInput.value = receivedText;
+              searchInput.dispatchEvent(new Event('input', { bubbles: true }));
               const searchForm = searchInput.closest('form');
               if (searchForm) {
                 try {
-                  searchForm.submit();
-                } catch (e) {
                   searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+                } catch (e) {
+                  searchForm.submit();
                 }
               }
             } else {
@@ -67,8 +69,8 @@ function windowOnload() {
               if (searchButton) {
                 searchButton.click();
                 setTimeout(() => {
-                  Search(receivedText);
-                }, 100);
+                  Search(receivedText, site.inputForm);
+                }, 200);
               }
             }
           }
@@ -79,18 +81,20 @@ function windowOnload() {
   };
 }
 
-function Search(receivedText) {
-  const searchInput = document.querySelector('input[id="docsearch-input"]');
+function Search(receivedText, inputForm) {
+  const searchInput = document.querySelector(inputForm);
   console.log('searchInputs:', searchInput);
   if (searchInput) {
     searchInput.value = receivedText;
-    console.log('searchInput.value:', searchInput.value);
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    searchInput.focus();
+    // console.log('searchInput.value:', searchInput.value);
     const searchForm = searchInput.closest('form');
     if (searchForm) {
       try {
-        searchForm.submit();
-      } catch (e) {
         searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      } catch (e) {
+        searchForm.submit();
       }
     }
   }
@@ -118,12 +122,14 @@ function customSearch(selectedText) {
   console.log("rect", rect);
   console.log("rect.bottom + window.scrollY + 100", rect.bottom + window.scrollY + 100);
   // オーバーレイ要素を作成
-  chrome.storage.local.get(['selectPosition', 'textDistance', 'theme', 'iconNum'], (data) => {
+  chrome.storage.local.get(['selectPosition', 'textDistance', 'theme', 'iconNum', 'newTab', 'searchMode'], (data) => {
     console.log("data.selectPosition", data.selectPosition);
     const selectPosition = data.selectPosition;
     const textDistance = Number(data.textDistance);
     const newTheme = data.theme;
     const iconNum = data.iconNum;
+    const newTab = data.newTab;
+    const searchMode = data.searchMode;
 
     const selBoxGroup = document.createElement('div');
     // const iconNum = 7;
@@ -137,22 +143,28 @@ function customSearch(selectedText) {
     let fromTop;
     let fromLeft;
     let position = "fixed";
-    if (selectPosition === 'default') {
-      fromTop = `${rect.bottom + window.scrollY + textDistance}px`; // 選択範囲の下に表示
-      fromLeft = `${rect.left + window.scrollX}px`;
-      position = "absolute";
-    } if (selectPosition === 'top-left') {
-      fromTop = `0px`;
-      fromLeft = `0px`;
-    } if (selectPosition === 'top-right') {
-      fromTop = `0px`;
-      fromLeft = `${window.innerWidth - maxWidth}px`;
-    } if (selectPosition === 'bottom-left') {
-      fromTop = `${window.innerHeight - rect.height}px`;
-      fromLeft = `0px`;
-    } if (selectPosition === 'bottom-right') {
-      fromTop = `${window.innerHeight - rect.height}px`;
-      fromLeft = `${window.innerWidth - maxWidth}px`;
+    switch (selectPosition) {
+      case 'default':
+        fromTop = `${rect.bottom + window.scrollY + textDistance}px`;
+        fromLeft = `${rect.left + window.scrollX}px`;
+        position = "absolute";
+        break;
+      case 'top-left':
+        fromTop = `0px`;
+        fromLeft = `0px`;
+        break;
+      case 'top-right':
+        fromTop = `0px`;
+        fromLeft = `${window.innerWidth - maxWidth}px`;
+        break;
+      case 'bottom-left':
+        fromTop = `${window.innerHeight - rect.height}px`;
+        fromLeft = `0px`;
+        break;
+      case 'bottom-right':
+        fromTop = `${window.innerHeight - rect.height}px`;
+        fromLeft = `${window.innerWidth - maxWidth}px`;
+        break;
     }
 
     const backgroundColor = newTheme === 'dark' ? '#292e33' : '#ffffff';
@@ -174,7 +186,7 @@ function customSearch(selectedText) {
       { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
       { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "results?search_query=" },
       { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
-      { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "search?q=", inputForm: "input[name='q']", inputButton: "button[class='DocSearch DocSearch-Button']" },
+      { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
       { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
       { name: "qiitacom", url: "https://qiita.com", searchQuery: "search?q=" },
       { name: "chatgptcom", url: "https://chatgpt.com", searchQuery: "search?q=", },
@@ -182,10 +194,9 @@ function customSearch(selectedText) {
       { name: "chromewebstoregooglecom", url: "https://chromewebstore.google.com", searchQuery: "search?q=" },
       { name: "wwwpixivnet", url: "https://www.pixiv.net", searchQuery: "search?q=" },
       { name: "x.com", url: "https://x.com", searchQuery: "search?q=" },
+      { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "search/new?q=" },
     ];
-    chrome.storage.local.set({ sites: sites }, () => {
-      console.log("sites:ok")
-    });
+
     sites.forEach((site, index) => {
       const selBox = document.createElement("a");
       // console.log("site", site);
@@ -194,13 +205,27 @@ function customSearch(selectedText) {
       selBox.href = site.url;
       selBox.id = site.name;
       selBox.target = "_blank";
-
       selBox.className = `btn1 btn-icon1 m-auto1 ${btnThemeColor}`;
       selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
       selBoxGroup.append(selBox);
+
       selBox.addEventListener('click', () => {
-        const searchUrl = `${site.url}/${site.searchQuery}${encodeURIComponent(selectedText)}`;
-        window.open(searchUrl, '_blank');
+        const searchUrl = site.searchQuery ? `${site.url}/${site.searchQuery}${encodeURIComponent(selectedText)}` : site.url;
+        console.log("searchMode", searchMode);
+        switch (searchMode) {
+          case 'new-tab':
+            window.open(searchUrl, '_blank');
+            break;
+          case 'current-tab':
+            window.location.href = searchUrl;
+            break;
+          case 'new-window':
+            chrome.runtime.sendMessage({ action: 'createWindow', url: searchUrl });
+            break;
+          case 'incognito':
+            chrome.runtime.sendMessage({ action: 'createIncognitoWindow', url: searchUrl });
+            break;
+        }
       });
     });
 
