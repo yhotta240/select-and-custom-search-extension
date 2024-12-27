@@ -63,7 +63,7 @@
           <label for="select-text-distance" class="form-label m-0 text-nowrap">選択したテキストから:</label>
           <p class="m-0" id="select-text-distance-label"></p>px 離す
         </div>
-        <input type="range" class="form-range" min="0" max="15" step="1" id="select-text-distance">
+        <input type="range" class="form-range" min="0" max="20" step="1" id="select-text-distance">
       </div>
 
       <hr>
@@ -90,14 +90,14 @@
                     d="M1 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zM1 9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z" />
                 </svg>
               </label>
-              <input type="radio" class="btn-check p-1" name="btn-radio" id="btn-radio2" autocomplete="off">
+              <!-- <input type="radio" class="btn-check p-1" name="btn-radio" id="btn-radio2" autocomplete="off">
               <label class="btn btn-outline-dark p-1 btn-sm" for="btn-radio2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-ul"
                   viewBox="0 0 16 16">
                   <path fill-rule="evenodd"
                     d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
                 </svg>
-              </label>
+              </label> -->
             </div>
           </div>
         </div>
@@ -130,6 +130,8 @@
       </div>
       <hr class="">
       <h5>検索サイト登録</h5>
+
+
       <p class="m-1">1. 検索したいサイトで一度検索を行ってください。</p>
       <p class="m-1">2. 検索結果のURLを下のフォームに入力してください。</p>
       <form id="urlForm" class="mb-3 d">
@@ -155,6 +157,31 @@
           </p>
           を追加しました
         </div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="site-query-list" class="table-nowrap table table-hover table-sm">
+          <thead>
+        <tr>
+          <th scope="col">image</th>
+          <!-- <th scope="col">name</th> -->
+          <th scope="col">url</th>
+          <th scope="col">searchQuery</th>
+          <th scope="col">inputForm</th>
+          <th scope="col">inputButton</th>
+        </tr>
+          </thead>
+          <tbody id="site-query-list-body">
+        <tr >
+          <td></td>
+          <!-- <td></td> -->
+          <td ></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
