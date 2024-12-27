@@ -75,3 +75,15 @@ function updateContextMenu() {
   });
 }
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'createWindow') {
+    chrome.windows.create({ url: message.url }, (newWindow) => {
+      // console.log(`新しいウィンドウが作成されました。ウィンドウID: ${newWindow.id}`);
+    });
+  } else if (message.action === 'createIncognitoWindow') {
+    chrome.windows.create({ url: message.url, incognito: true }, (newWindow) => {
+      // console.log(`シークレットモードで新しいウィンドウが作成されました。ウィンドウID: ${newWindow.id}`);
+    });
+  }
+});
+
