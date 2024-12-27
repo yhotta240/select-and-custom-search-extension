@@ -63,7 +63,14 @@ function customSearchPreview(iconNum) {
     { name: "chromewebstoregooglecom", url: "https://chromewebstore.google.com", searchQuery: "search?q=" },
     { name: "wwwpixivnet", url: "https://www.pixiv.net", searchQuery: "search?q=" },
     { name: "x.com", url: "https://x.com", searchQuery: "search?q=" },
+    { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "search/new?q=" },
   ];
+  chrome.storage.local.set({ sites: sites }, () => {
+    console.log("sites:ok")
+  });
+  const siteQueryList = document.getElementById('site-query-list');
+  const siteQueryListBody = document.getElementById('site-query-list-body');
+  siteQueryListBody.innerHTML = ``;
 
   sites.forEach((site, index) => {
     const selBox = document.createElement("a");
@@ -81,49 +88,19 @@ function customSearchPreview(iconNum) {
       // const searchUrl = `${site.url}/${site.searchQuery}${encodeURIComponent(selectedText)}`;
       // window.open(searchUrl, '_blank');
     });
-    selBox.draggable = true;
-    selBox.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', index);
-      selBox.classList.add('dragging');
-    });
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>
+        <img src="${iconUrl}" alt="アイコン" style="width:15px; height:15px;">
+      </td>
+      <td class='text-nowrap'>${site.url}</td>
+      <td class='text-nowrap'>${site.searchQuery}</td>
+      <td class='text-nowrap'>${site.inputForm}</td>
+      <td class='text-nowrap'>${site.inputButton}</td>
+    `;
+    siteQueryListBody.innerHTML += row.outerHTML;
 
-    selBox.addEventListener('dragend', () => {
-      selBox.classList.remove('dragging');
-      document.querySelectorAll('.selBoxGroup').forEach(el => el.classList.remove('over'));
-    });
 
-    selBox.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      const overElement = e.target.closest('a');
-      if (overElement && overElement !== selBox) {
-        overElement.classList.add('over');
-      }
-    });
-
-    selBox.addEventListener('dragleave', (e) => {
-      const overElement = e.target.closest('a');
-      if (overElement && overElement !== selBox) {
-        overElement.classList.remove('over');
-      }
-    });
-
-    selBox.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const draggedIndex = e.dataTransfer.getData('text/plain');
-      const targetIndex = index;
-
-      if (draggedIndex !== targetIndex) {
-        const draggedElement = selBoxGroup.children[draggedIndex];
-        const targetElement = selBoxGroup.children[targetIndex];
-
-        if (draggedIndex < targetIndex) {
-          selBoxGroup.insertBefore(draggedElement, targetElement.nextSibling);
-        } else {
-          selBoxGroup.insertBefore(draggedElement, targetElement);
-        }
-      }
-      document.querySelectorAll('.selBoxGroup a').forEach(el => el.classList.remove('over'));
-    });
 
     // 画像のドラッグを無効にする
     // selBox.querySelector('img').addEventListener('dragstart', (e) => {
@@ -262,6 +239,8 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(`選択された位置: ${value}`);
     if (value === 'default') {
       searchBoxDistance.classList.remove('d-none');
+    } else {
+      searchBoxDistance.classList.add('d-none');
     }
     if (!isSelect) {
       chrome.storage.local.get(['selectPosition'], (data) => {
@@ -292,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!isInput) {
       chrome.storage.local.get(['textDistance'], (data) => {
         value = data.textDistance ?? 10;
-        console.log("data.textDistance",typeof data.textDistance);
+        console.log("data.textDistance", typeof data.textDistance);
         chrome.storage.local.set({ textDistance: value }, () => {
           textDistanceLabel.textContent = value;
           textDistanceInput.value = value;
