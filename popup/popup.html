@@ -115,16 +115,21 @@
         </div>
         <div class=" d-flex mb-3 w-100" id="settings-preview">
         </div>
+
+
+        <div class="d-flex align-items-center text-nowrap w-75 mb-2">
+          検索モード:
+          <select name="search-mode" id="search-mode" class="ms-2 form-select form-select-sm  ">
+            <option value="new-tab">新しいタブで検索する</option>
+            <option value="current-tab">現在のタブで検索する</option>
+            <option value="new-window">新しいウィンドウで検索する</option>
+            <option value="incognito">シークレットモードで検索する</option>
+          </select>
+        </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="flex-check-expanded" checked>
           <label class="form-check-label" for="flex-check-expanded">
             検索ボックスを常に展開する
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="flex-check-newtab" checked>
-          <label class="form-check-label" for="flex-check-newtab">
-            新しいタブで検索する
           </label>
         </div>
       </div>
@@ -132,13 +137,14 @@
       <h5>検索サイト登録</h5>
 
 
-      <p class="m-1">1. 検索したいサイトで一度検索を行ってください。</p>
-      <p class="m-1">2. 検索結果のURLを下のフォームに入力してください。</p>
-      <form id="urlForm" class="mb-3 d">
+      <p class="m-1">1. 検索したいサイトで一度キーワード検索を行ってください。</p>
+      <p class="m-1">2. キーワード検索結果のURLを下のフォームに入力してください。</p>
+      <form id="urlForm" class="mb-3">
         <label for="searchUrl" class="form-label">検索結果のURL</label>
         <div class="d-flex text-nowrap">
           <input type="url" class="form-control me-1 form-control-sm" id="searchUrl"
             placeholder="例: https://www.google.com/search?q=sample" required>
+          <button id="btn-close" type="button" class="btn-close my-auto me-2 " aria-label="Close"></button>
           <button type="submit" class="btn btn-primary ">解析する</button>
         </div>
       </form>
@@ -162,24 +168,24 @@
       <div class="table-responsive">
         <table id="site-query-list" class="table-nowrap table table-hover table-sm">
           <thead>
-        <tr>
-          <th scope="col">image</th>
-          <!-- <th scope="col">name</th> -->
-          <th scope="col">url</th>
-          <th scope="col">searchQuery</th>
-          <th scope="col">inputForm</th>
-          <th scope="col">inputButton</th>
-        </tr>
+            <tr>
+              <th scope="col">image</th>
+              <!-- <th scope="col">name</th> -->
+              <th scope="col">url</th>
+              <th scope="col">searchQuery</th>
+              <th scope="col">inputForm</th>
+              <th scope="col">inputButton</th>
+            </tr>
           </thead>
           <tbody id="site-query-list-body">
-        <tr >
-          <td></td>
-          <!-- <td></td> -->
-          <td ></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
+            <tr>
+              <td></td>
+              <!-- <td></td> -->
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
           </tbody>
         </table>
       </div>
