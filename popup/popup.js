@@ -28,6 +28,23 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
   messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 はONになっています` : `選択＆カスタム検索 はOFFになっています`);
 });
 
+
+const defaultSites = [
+  { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
+  { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "results?search_query=" },
+  { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
+  { name: "getbootstrapcom", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
+  { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
+  { name: "qiitacom", url: "https://qiita.com", searchQuery: "search?q=" },
+  { name: "chatgptcom", url: "https://chatgpt.com", searchQuery: "search?q=", },
+  { name: "tverjp", url: "https://tver.jp", searchQuery: "search?q=", inputForm: "input[name='keywordInput']" },
+  { name: "chromewebstoregooglecom", url: "https://chromewebstore.google.com", searchQuery: "search?q=" },
+  { name: "wwwpixivnet", url: "https://www.pixiv.net", searchQuery: "search?q=" },
+  { name: "x.com", url: "https://x.com", searchQuery: "search?q=" },
+  { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "search/new?q=" },
+  { name: "open.spotify.com", url: "https://open.spotify.com", searchQuery: "search/" },
+];
+
 customSearchPreview();
 function customSearchPreview(iconNum) {
   const selBoxGroup = document.createElement('div');
@@ -51,22 +68,10 @@ function customSearchPreview(iconNum) {
   selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
   selBoxGroup.id = "search-box"
 
-  const sites = [
-    { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
-    { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "results?search_query=" },
-    { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
-    { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
-    { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
-    { name: "qiitacom", url: "https://qiita.com", searchQuery: "search?q=" },
-    { name: "chatgptcom", url: "https://chatgpt.com", searchQuery: "search?q=", },
-    { name: "tverjp", url: "https://tver.jp", searchQuery: "search?q=", inputForm: "input[name='keywordInput']" },
-    { name: "chromewebstoregooglecom", url: "https://chromewebstore.google.com", searchQuery: "search?q=" },
-    { name: "wwwpixivnet", url: "https://www.pixiv.net", searchQuery: "search?q=" },
-    { name: "x.com", url: "https://x.com", searchQuery: "search?q=" },
-    { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "search/new?q=" },
-  ];
+  const sites = defaultSites;
+
   chrome.storage.local.set({ sites: sites }, () => {
-    console.log("sites:ok")
+    console.log("sites:ok");
   });
   const siteQueryList = document.getElementById('site-query-list');
   const siteQueryListBody = document.getElementById('site-query-list-body');
