@@ -46,7 +46,7 @@ function windowOnload() {
       console.log('受信したテキスト:', receivedText);
       if (receivedText) {
         const currentUrl = window.location.href;
-        sites = data.sites;
+        const sites = data.sites;
         console.log('sites:', sites);
         sites.forEach((site) => {
           if (currentUrl.includes(site.url)) {
@@ -122,17 +122,16 @@ function customSearch(selectedText) {
   console.log("rect", rect);
   console.log("rect.bottom + window.scrollY + 100", rect.bottom + window.scrollY + 100);
   // オーバーレイ要素を作成
-  chrome.storage.local.get(['selectPosition', 'textDistance', 'theme', 'iconNum', 'newTab', 'searchMode'], (data) => {
+  chrome.storage.local.get(['sites', 'selectPosition', 'textDistance', 'theme', 'iconNum', 'searchMode'], (data) => {
     console.log("data.selectPosition", data.selectPosition);
+    const sites = data.sites;
     const selectPosition = data.selectPosition;
     const textDistance = Number(data.textDistance);
     const newTheme = data.theme;
     const iconNum = data.iconNum;
-    const newTab = data.newTab;
     const searchMode = data.searchMode;
 
     const selBoxGroup = document.createElement('div');
-    // const iconNum = 7;
     const gap = 2;
     const groupPadding = 6;
     const padding = 4;
@@ -140,62 +139,33 @@ function customSearch(selectedText) {
     const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
     console.log("maxWidth", maxWidth);
 
-    let fromTop;
-    let fromLeft;
-    let position = "fixed";
-    switch (selectPosition) {
-      case 'default':
-        fromTop = `${rect.bottom + window.scrollY + textDistance}px`;
-        fromLeft = `${rect.left + window.scrollX}px`;
-        position = "absolute";
-        break;
-      case 'top-left':
-        fromTop = `0px`;
-        fromLeft = `0px`;
-        break;
-      case 'top-right':
-        fromTop = `0px`;
-        fromLeft = `${window.innerWidth - maxWidth}px`;
-        break;
-      case 'bottom-left':
-        fromTop = `${window.innerHeight - rect.height}px`;
-        fromLeft = `0px`;
-        break;
-      case 'bottom-right':
-        fromTop = `${window.innerHeight - rect.height}px`;
-        fromLeft = `${window.innerWidth - maxWidth}px`;
-        break;
-    }
+    const positions = {
+      'default': { top: `${rect.bottom + window.scrollY + textDistance}px`, left: `${rect.left + window.scrollX}px`, position: 'absolute' },
+      'top-left': { top: '0px', left: '0px', right: 'auto', bottom: 'auto' },
+      'top-right': { top: '0px', left: 'auto', right: '0px', bottom: 'auto' },
+      'bottom-left': { top: 'auto', left: '0px', right: 'auto', bottom: '0px' },
+      'bottom-right': { top: 'auto', left: 'auto', right: '0px', bottom: '0px' }
+    };
 
+    const { top, left, right, bottom, position } = positions[selectPosition] || positions['default'];
     const backgroundColor = newTheme === 'dark' ? '#292e33' : '#ffffff';
     const btnThemeColor = newTheme === 'dark' ? 'btn-dark1' : 'btn-light1';
+
     Object.assign(selBoxGroup.style, {
-      position: position,
-      top: fromTop,
-      left: fromLeft,
-      pointerEvents: 'absolute', // クリック可能にする
+      position: position || 'fixed',
+      top: top,
+      left: left,
+      right: right,
+      bottom: bottom,
+      pointerEvents: 'absolute',
       maxWidth: `${maxWidth}px`,
       backgroundColor: backgroundColor,
     });
+
     selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1";
     selBoxGroup.role = "group";
     selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
-    selBoxGroup.id = "search-box"
-
-    const sites = [
-      { name: "googlecom", url: "https://google.com", searchQuery: "search?q=" },
-      { name: "youtubecom", url: "https://www.youtube.com", searchQuery: "results?search_query=" },
-      { name: "githubcom", url: "https://github.com", searchQuery: "search?q=" },
-      { name: "getbootstrapcom", url: "https://getbootstrap.com", searchQuery: "", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
-      { name: "wwwamazoncojp", url: "https://www.amazon.co.jp", searchQuery: "s?k=" },
-      { name: "qiitacom", url: "https://qiita.com", searchQuery: "search?q=" },
-      { name: "chatgptcom", url: "https://chatgpt.com", searchQuery: "search?q=", },
-      { name: "tverjp", url: "https://tver.jp", searchQuery: "search?q=", inputForm: "input[name='keywordInput']" },
-      { name: "chromewebstoregooglecom", url: "https://chromewebstore.google.com", searchQuery: "search?q=" },
-      { name: "wwwpixivnet", url: "https://www.pixiv.net", searchQuery: "search?q=" },
-      { name: "x.com", url: "https://x.com", searchQuery: "search?q=" },
-      { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "search/new?q=" },
-    ];
+    selBoxGroup.id = "search-box";
 
     sites.forEach((site, index) => {
       const selBox = document.createElement("a");
