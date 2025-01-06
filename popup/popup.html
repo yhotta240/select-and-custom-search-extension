@@ -100,25 +100,37 @@
         </div>
 
 
-        <div class="d-flex align-items-center text-nowrap w-75 mb-2">
-          検索モード:
-          <select name="search-mode" id="search-mode" class="ms-2 form-select form-select-sm  ">
-            <option value="new-tab">新しいタブで検索する</option>
-            <option value="current-tab">現在のタブで検索する</option>
-            <option value="new-window">新しいウィンドウで検索する</option>
-            <option value="incognito">シークレットモードで検索する</option>
-          </select>
+        <!-- 検索モード -->
+        <div class="row w-75 mb-2">
+          <div class="col-3">
+            <label for="search-mode" class="form-label m-0 text-nowrap me-2">検索モード:</label>
+          </div>
+          <div class="col-9">
+            <select name="search-mode" id="search-mode" class="ms-2 form-select form-select-sm  ">
+              <option value="new-tab">新しいタブで検索する</option>
+              <option value="current-tab">現在のタブで検索する</option>
+              <option value="new-window">新しいウィンドウで検索する</option>
+              <option value="incognito">シークレットモードで検索する</option>
+            </select>
+          </div>
         </div>
-        <div class="d-flex align-items-center justify-content-between text-nowrap w-75 mb-2">
-          配置: 
-          <select id="select-position" class="ms-2 form-select form-select-sm " aria-label="Small select example">
-            <option value="default" selected>選択したテキストの下に表示する</option>
-            <option value="top-left">ページの左上</option>
-            <option value="top-right">ページの右上</option>
-            <option value="bottom-left">ページの左下</option>
-            <option value="bottom-right">ページの右下</option>
-          </select>
+        <!-- 配置 -->
+        <div class="row w-75 mb-2">
+          <div class="col-3">
+            <label for="select-position" class="form-label m-0 text-nowrap me-2">配置:</label>
+          </div>
+          <div class="col-9">
+            <select id="select-position" class="ms-2 form-select form-select-sm " aria-label="Small select example">
+              <option value="default" selected>選択したテキストの下に表示する</option>
+              <option value="top-left">ページの左上</option>
+              <option value="top-right">ページの右上</option>
+              <option value="bottom-left">ページの左下</option>
+              <option value="bottom-right">ページの右下</option>
+            </select>
+          </div>
         </div>
+
+
         <div class="d-none" id="search-box-distance">
           <div class="d-flex align-items-center">
             <label for="select-text-distance" class="form-label m-0 text-nowrap">選択したテキストから:</label>
@@ -127,12 +139,12 @@
           <input type="range" class="form-range" min="0" max="20" step="1" id="select-text-distance">
         </div>
 
-        <div class="form-check">
+        <!-- <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="flex-check-expanded" checked>
           <label class="form-check-label" for="flex-check-expanded">
             検索ボックスを常に展開する
           </label>
-        </div>
+        </div> -->
       </div>
       <hr class="">
       <h5>検索サイト登録</h5>
@@ -155,7 +167,7 @@
       <div id="resultSection" class="d-none">
         <p><strong>検索形式:</strong> <span id="searchType"></span></p>
         <div id="paramSection" class="d-none">
-          <label for="paramSelect" class="form-label">検索に使用するパラメータを選択してください:</label>
+          <label for="paramSelect" class="form-label" id="select-label">検索に使用するパラメータを選択してください:</label>
           <select id="paramSelect" class="form-select"></select>
           <div class="d-flex justify-content-end"><button id="registerButton" class=" btn btn-success mt-3">登録</button>
           </div>
@@ -334,12 +346,12 @@
   </div>
 
   <!-- 固定フッターとしての開閉パネル -->
-  <div class="fixed-bottom bg-dark text-white">
+  <div class="fixed-bottom bg-dark text-white " style="z-index: 1000;">
     <button class="btn btn-dark btn-sm p-0 w-100" id="panelButton">
       メッセージパネルを開く
     </button>
     <!-- メッセージ -->
-    <div id="messagePanel" class="bg-light text-dark p-1 overflow-auto">
+    <div id="messagePanel" class="bg-light text-dark p-1 overflow-auto ">
       <div class="d-flex justify-content-between">
         <div class="fw-light py-auto">メッセージ</div>
         <button type="button" class="btn btn-light btn-sm" id="messageClearButton">
