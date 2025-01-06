@@ -1,9 +1,11 @@
 let isEnabled = false;
+// let isSearchLoad = false;
 const manifestData = chrome.runtime.getManifest();
 // ツールの有効/無効を処理する関数
-const handleSampleTool = (isEnabled) => {
+const handleTool = (isEnabled) => {
   if (isEnabled) {
     console.log(`${manifestData.name} がONになりました`);
+    // console.log("isAfterLoad1111", isSearchLoad);
     document.addEventListener('mouseup', eventHandler);
     windowOnload();
   } else {
@@ -17,7 +19,7 @@ const handleSampleTool = (isEnabled) => {
 chrome.storage.local.get(['settings', 'isEnabled', 'selectedText'], (data) => {
   console.log("data", data)
   isEnabled = data.isEnabled !== undefined ? data.isEnabled : isEnabled;
-  handleSampleTool(isEnabled);
+  handleTool(isEnabled);
 });
 
 document.addEventListener('keydown', (e) => {
@@ -25,89 +27,79 @@ document.addEventListener('keydown', (e) => {
     chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
       isEnabled = !data.isEnabled;
       chrome.storage.local.set({ settings: data.settings, isEnabled: isEnabled });
-      handleSampleTool(isEnabled);
+      handleTool(isEnabled);
     });
   }
 });
 
 chrome.storage.onChanged.addListener((changes) => {
   isEnabled = changes.isEnabled ? changes.isEnabled.newValue : isEnabled;
-  handleSampleTool(isEnabled);
+  handleTool(isEnabled);
 });
 
 
 // ページが読み込まれた後に実行
 function windowOnload() {
-  window.onload = function (event) {
-    console.log("event", event);
-    chrome.storage.local.get(['selectedText', 'sites'], (data) => {
-      const receivedText = data.selectedText;
-      console.log('data:', data);
-      console.log('受信したテキスト:', receivedText);
-      if (receivedText) {
-        const currentUrl = window.location.href;
-        const sites = data.sites;
-        console.log('sites:', sites);
-        sites.forEach((site) => {
-          if (currentUrl.includes(site.url)) {
-            console.log('site:', site);
-            const searchInput = document.querySelector(site.inputForm);
-            if (searchInput) {
-              searchInput.focus();
-              searchInput.value = receivedText;
-              searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-              const searchForm = searchInput.closest('form');
-              if (searchForm) {
-                try {
-                  searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-                } catch (e) {
-                  searchForm.submit();
-                }
-              }
-            } else {
-              const searchButton = document.querySelector(site.inputButton);
-              if (searchButton) {
-                searchButton.click();
-                setTimeout(() => {
-                  Search(receivedText, site.inputForm);
-                }, 200);
-              }
-            }
+  console.log("events");
+  chrome.storage.local.get(['selectedText', 'sites', 'isSearchLoad'], (data) => {
+    const { selectedText, sites, isSearchLoad } = data;
+    console.log('data:', data);
+    console.log('受信したテキスト:', selectedText);
+    console.log("isSearchLoad", isSearchLoad);
+    if (!isSearchLoad || !selectedText) return;
+
+    const currentUrl = window.location.href;
+    sites.forEach((site) => {
+      if (currentUrl.includes(site.url)) {
+        console.log('site:', site);
+        const searchInput = document.querySelector(site.inputForm);
+        console.log('searchInput:', searchInput);
+        if (searchInput) {
+          performSearch(searchInput, selectedText);
+        } else {
+          const searchButton = document.querySelector(site.inputButton);
+          if (searchButton) {
+            searchButton.click();
+            setTimeout(() => {
+              const newSearchInput = document.querySelector(site.inputForm);
+              if (newSearchInput) performSearch(newSearchInput, selectedText);
+            }, 200);
           }
-        });
+        }
       }
-      chrome.storage.local.set({ selectedText: "" }, () => console.log("ok"));
     });
-  };
+  });
 }
 
-function Search(receivedText, inputForm) {
-  const searchInput = document.querySelector(inputForm);
-  console.log('searchInputs:', searchInput);
-  if (searchInput) {
-    searchInput.value = receivedText;
-    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-    searchInput.focus();
-    // console.log('searchInput.value:', searchInput.value);
-    const searchForm = searchInput.closest('form');
+function performSearch(searchInput, text) {
+  searchInput.focus();
+  searchInput.value = text;
+  searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+  const searchForm = searchInput.closest('form');
+  chrome.storage.local.set({ selectedText: "", isSearchLoad: false }, () => {
+    console.log("isSearchLoadをfalseにしました");
+    console.log("selectedTextを空にしました");
     if (searchForm) {
       try {
-        searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      } catch (e) {
         searchForm.submit();
+        console.log('submit');
+      } catch (e) {
+        searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        console.log('enter');
       }
     }
-  }
+  });
 }
+
 
 
 function eventHandler() {
   const selectedText = window.getSelection().toString().trim();
   if (!selectedText) { return; }
   console.log('選択されたテキスト:', selectedText);
-  customSearch(selectedText);
   chrome.storage.local.set({ selectedText: selectedText }, () => {
-    console.log("ok")
+    customSearch(selectedText);
+    console.log("選択されたテキストを保存しました");
   });
 };
 
@@ -124,12 +116,7 @@ function customSearch(selectedText) {
   // オーバーレイ要素を作成
   chrome.storage.local.get(['sites', 'selectPosition', 'textDistance', 'theme', 'iconNum', 'searchMode'], (data) => {
     console.log("data.selectPosition", data.selectPosition);
-    const sites = data.sites;
-    const selectPosition = data.selectPosition;
-    const textDistance = Number(data.textDistance);
-    const newTheme = data.theme;
-    const iconNum = data.iconNum;
-    const searchMode = data.searchMode;
+    const { sites, selectPosition, textDistance, theme: newTheme, iconNum, searchMode } = data;
 
     const selBoxGroup = document.createElement('div');
     const gap = 2;
@@ -140,7 +127,7 @@ function customSearch(selectedText) {
     console.log("maxWidth", maxWidth);
 
     const positions = {
-      'default': { top: `${rect.bottom + window.scrollY + textDistance}px`, left: `${rect.left + window.scrollX}px`, position: 'absolute' },
+      'default': { top: `${rect.bottom + window.scrollY + Number(textDistance)}px`, left: `${rect.left + window.scrollX}px`, position: 'absolute' },
       'top-left': { top: '0px', left: '0px', right: 'auto', bottom: 'auto' },
       'top-right': { top: '0px', left: 'auto', right: '0px', bottom: 'auto' },
       'bottom-left': { top: 'auto', left: '0px', right: 'auto', bottom: '0px' },
@@ -171,7 +158,7 @@ function customSearch(selectedText) {
       const selBox = document.createElement("a");
       // console.log("site", site);
       const iconUrl = getFaviconUrl(site.url);
-      console.log("iconURL", iconUrl);
+      // console.log("iconURL", iconUrl);
       selBox.href = site.url;
       selBox.id = site.name;
       selBox.target = "_blank";
@@ -179,23 +166,27 @@ function customSearch(selectedText) {
       selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
       selBoxGroup.append(selBox);
 
-      selBox.addEventListener('click', () => {
-        const searchUrl = site.searchQuery ? `${site.url}/${site.searchQuery}${encodeURIComponent(selectedText)}` : site.url;
-        console.log("searchMode", searchMode);
-        switch (searchMode) {
-          case 'new-tab':
-            window.open(searchUrl, '_blank');
-            break;
-          case 'current-tab':
-            window.location.href = searchUrl;
-            break;
-          case 'new-window':
-            chrome.runtime.sendMessage({ action: 'createWindow', url: searchUrl });
-            break;
-          case 'incognito':
-            chrome.runtime.sendMessage({ action: 'createIncognitoWindow', url: searchUrl });
-            break;
-        }
+      selBox.addEventListener('click', function (event) {
+        event.preventDefault();
+        chrome.storage.local.set({ isSearchLoad: site.searchQuery ? false : true }, function () {
+          console.log("isSearchLoadをtrueにしました");
+          const searchUrl = site.searchQuery ? `${site.url}${site.searchQuery}${encodeURIComponent(selectedText)}` : site.url;
+          console.log("searchMode", searchMode);
+          switch (searchMode) {
+            case 'new-tab':
+              window.open(searchUrl, '_blank');
+              break;
+            case 'current-tab':
+              window.location.href = searchUrl;
+              break;
+            case 'new-window':
+              chrome.runtime.sendMessage({ action: 'createWindow', url: searchUrl });
+              break;
+            case 'incognito':
+              chrome.runtime.sendMessage({ action: 'createIncognitoWindow', url: searchUrl });
+              break;
+          }
+        });
       });
     });
 
