@@ -33,17 +33,16 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
 const defaultSites = [
   { name: "google.com", url: "https://google.com", searchQuery: "/search?q=" },
   { name: "youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=" },
-  { name: "github.com", url: "https://github.com", searchQuery: "/search?q=" },
-  { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
-  { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=" },
-  { name: "qiita.com", url: "https://qiita.com", searchQuery: "/search?q=" },
-  { name: "chatgpt.com", url: "https://chatgpt.com", searchQuery: "/search?q=", },
-  { name: "tver.jp", url: "https://tver.jp/search", inputForm: "input[name='keywordInput']" },
-  { name: "chromewebstore.google.com", url: "https://chromewebstore.google.com", searchQuery: "/search?q=" },
-  { name: "www.pixiv.net", url: "https://www.pixiv.net", searchQuery: "/search?q=" },
   { name: "x.com", url: "https://x.com", searchQuery: "/search?q=" },
+  { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=" },
+  { name: "chatgpt.com", url: "https://chatgpt.com", searchQuery: "/search?q=", },
   { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "/search/new?q=" },
   { name: "open.spotify.com", url: "https://open.spotify.com", searchQuery: "/search/" },
+  { name: "www.pixiv.net", url: "https://www.pixiv.net", searchQuery: "/search?q=" },
+  { name: "tver.jp", url: "https://tver.jp", searchQuery: "/search/" },
+  { name: "github.com", url: "https://github.com", searchQuery: "/search?q=" },
+  { name: "qiita.com", url: "https://qiita.com", searchQuery: "/search?q=" },
+  { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
 ];
 console.log("defaultSites", defaultSites);
 
@@ -171,6 +170,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
   const paramSelect = document.getElementById("paramSelect");
   const templateSection = document.getElementById("templateSection");
   const searchTemplate = document.getElementById("searchTemplate");
+  const selectLabel = document.querySelector('#select-label');
 
   // Reset UI
   paramSelect.innerHTML = "";
@@ -191,10 +191,24 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
     }
 
     paramSection.classList.remove("d-none");
-  }
-  else {
+  } else if (url.hash) {
+    searchType.textContent = "フラグメント型検索";
+    selectLabel.textContent = "検索したキーワードを選択してください:";
+
+    // Extract keyword from hash (e.g., #search/IT)
+    const hashParts = url.hash.split("/").filter((part) => part !== "");
+    if (hashParts.length > 0) {
+      hashParts.forEach((part, index) => {
+        const option = document.createElement("option");
+        option.value = index === 0 ? `#${part}` : part; // Keep the first part with the hash symbol
+        option.textContent = part;
+        paramSelect.appendChild(option);
+      });
+
+      paramSection.classList.remove("d-none");
+    }
+  } else {
     searchType.textContent = "パス型検索";
-    const selectLabel = document.querySelector('#select-label');
     selectLabel.textContent = "検索したキーワードを選択してください:";
     // Split the URL path and provide options for selection
     const pathParts = url.pathname.split("/").filter((part) => part !== "");
@@ -208,14 +222,9 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 
       paramSection.classList.remove("d-none");
     }
+
   }
-  // else if (url.pathname.includes("/search/")) {
-  //   searchType.textContent = "パス型検索";
-  //   paramSection.classList.add("d-none");
-  // } else {
-  //   searchType.textContent = "URL変化なし検索";
-  //   paramSection.classList.add("d-none");
-  // }
+
 
   resultSection.classList.remove("d-none");
   // Register button click
@@ -230,6 +239,11 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
         const selectedParam = paramSelect.value;
         template = `${url.origin}${url.pathname}?${selectedParam}={query}`;
         searchQuery = `${url.pathname}?${selectedParam}=`;
+      } else if (searchType.textContent === "フラグメント型検索") {
+        const selectedKeyword = paramSelect.value;
+        basePath = url.hash.split(selectedKeyword)[0];
+        template = `${url.origin}/${basePath}{keyword}`;
+        searchQuery = `/${basePath}`;
       } else if (searchType.textContent === "パス型検索") {
         const selectedKeyword = paramSelect.value;
         basePath = url.pathname.split(selectedKeyword)[0];
@@ -268,39 +282,6 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 
 // DOMの読み込み完了を監視し，完了後に実行
 document.addEventListener('DOMContentLoaded', function () {
-  const selectPosition = document.querySelector('#select-position');
-  const searchBoxDistance = document.querySelector('#search-box-distance');
-
-  chrome.storage.local.get(['selectPosition'], ({ selectPosition: value = 'default' }) => {
-    selectPosition.value = value;
-    searchBoxDistance.classList.toggle('d-none', value !== 'default');
-  });
-
-  selectPosition.addEventListener('change', ({ target: { value } }) => {
-    chrome.storage.local.set({ selectPosition: value }, () => {
-      messageOutput(dateTime(), `選択された位置が ${value} に変更されました`);
-      searchBoxDistance.classList.toggle('d-none', value !== 'default');
-    });
-  });
-
-  // 選択テキストの下に表示する検索ボックスの設定
-  const textDistanceInput = document.querySelector('#select-text-distance');
-  const textDistanceLabel = document.querySelector('#select-text-distance-label');
-
-  chrome.storage.local.get(['textDistance'], (data) => {
-    const value = data.textDistance ?? 10;
-    textDistanceLabel.textContent = value;
-    textDistanceInput.value = value;
-  });
-
-  textDistanceInput.addEventListener('input', (event) => {
-    const value = event.target.value;
-    textDistanceLabel.textContent = value;
-    chrome.storage.local.set({ textDistance: value }, () => {
-      messageOutput(dateTime(), `テキストの下距離が ${value} に変更されました`);
-    });
-  });
-
 
   // アイコンの個数を設定
   const iconNumRange = document.querySelector('#icon-num-range');
@@ -310,6 +291,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const value = data.iconNum ?? 8;
     iconNumText.textContent = value;
     iconNumRange.value = value;
+    chrome.storage.local.set({ iconNum: value }, () => {
+      customSearchPreview();
+      messageOutput(dateTime(), `アイコンの個数：${value} `);
+    });
   });
 
   iconNumRange.addEventListener('input', (event) => {
@@ -322,20 +307,65 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // 検索モードの設定
-  const selectElement = document.getElementById('search-mode');
+  const selectElement = document.querySelector('#search-mode');
   chrome.storage.local.get('searchMode', (data) => {
     const value = data.searchMode ?? 'new-tab';
     selectElement.value = value;
+    const optionText = selectElement.options[selectElement.selectedIndex].text;
     chrome.storage.local.set({ searchMode: value }, () => {
-      messageOutput(dateTime(), `検索モードが ${value} に変更されました`);
+      messageOutput(dateTime(), `検索モード：${optionText}`);
     });
   });
 
   selectElement.addEventListener('change', () => {
+    const optionText = selectElement.options[selectElement.selectedIndex].text;
     chrome.storage.local.set({ searchMode: selectElement.value }, () => {
-      messageOutput(dateTime(), `検索モードが ${selectElement.value} に変更されました`);
+      messageOutput(dateTime(), `検索モードが ${optionText} に変更されました`);
     });
   });
+
+  // 配置
+  const selectPosition = document.querySelector('#select-position');
+  const searchBoxDistance = document.querySelector('#search-box-distance');
+
+  chrome.storage.local.get(['selectPosition'], ({ selectPosition: value = 'default' }) => {
+    selectPosition.value = value;
+    searchBoxDistance.classList.toggle('d-none', value !== 'default');
+    chrome.storage.local.set({ selectPosition: value }, () => {
+      messageOutput(dateTime(), `配置： ${value}`);
+      searchBoxDistance.classList.toggle('d-none', value !== 'default');
+    });
+  });
+
+  selectPosition.addEventListener('change', ({ target: { value } }) => {
+    chrome.storage.local.set({ selectPosition: value }, () => {
+      messageOutput(dateTime(), `配置が ${value} に変更されました`);
+      searchBoxDistance.classList.toggle('d-none', value !== 'default');
+    });
+  });
+
+  // 選択テキストの下に表示する検索ボックスの設定
+  const textDistanceInput = document.querySelector('#select-text-distance');
+  const textDistanceLabel = document.querySelector('#select-text-distance-label');
+
+  chrome.storage.local.get(['textDistance'], (data) => {
+    const value = data.textDistance ?? 10;
+    textDistanceLabel.textContent = value;
+    textDistanceInput.value = value;
+    textDistanceLabel.textContent = value;
+    chrome.storage.local.set({ textDistance: value }, () => {
+      messageOutput(dateTime(), `選択したテキストの下距離：${value}`);
+    });
+  });
+
+  textDistanceInput.addEventListener('input', (event) => {
+    const value = event.target.value;
+    textDistanceLabel.textContent = value;
+    chrome.storage.local.set({ textDistance: value }, () => {
+      messageOutput(dateTime(), `選択したテキストの下距離が ${value} に変更されました`);
+    });
+  });
+
 
   // 検索ボックスのURLをクリアするボタン
   const searchUrlInput = document.getElementById('searchUrl');
