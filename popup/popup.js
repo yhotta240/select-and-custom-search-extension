@@ -44,7 +44,6 @@ const defaultSites = [
   { name: "qiita.com", url: "https://qiita.com", searchQuery: "/search?q=" },
   { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
 ];
-console.log("defaultSites", defaultSites);
 
 customSearchPreview();
 function customSearchPreview() {
@@ -73,13 +72,11 @@ function customSearchPreview() {
 
 
     const selBoxGroup = document.createElement('div');
-    // const iconNum = 7;
     const gap = 2;
     const groupPadding = 6;
     const padding = 4;
     const buttonWidth = 20;
     const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
-    console.log("maxWidth", maxWidth);
 
     Object.assign(selBoxGroup.style, {
       // position: "absolute",
@@ -93,13 +90,11 @@ function customSearchPreview() {
     selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
     selBoxGroup.id = "search-box"
     chrome.storage.local.set({ sites: sites }, () => {
-      console.log("sites:ok");
     });
     sites.forEach((site, index) => {
       const selBox = document.createElement("a");
       console.log("site", site);
       const iconUrl = getFaviconUrl(site.url);
-      console.log("iconURL", iconUrl);
       selBox.href = site.url;
       selBox.id = site.name;
       selBox.target = "_blank";
@@ -127,12 +122,14 @@ function customSearchPreview() {
     });
   });
 }
-// const changeThemeIcon = document.querySelector('#change-theme-icon');
-// changeThemeIcon.addEventListener('click', () => {
-//   customSearchPreview();
-// });
+
 
 function listSites() {
+  const deleteIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+      <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+    </svg>  
+  `;
   chrome.storage.local.get(['sites'], (data) => {
     const sites = data.sites ?? [];
     // console.log("sites", sites);
@@ -143,15 +140,31 @@ function listSites() {
       const iconUrl = getFaviconUrl(site.url);
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>
+        <td class="text-center delete-list-td d-none" >
+          <button class='btn btn-sm p-0 btn-outline-secondary delete-list-btn'  >
+            ${deleteIcon}
+          </button>
+        </td>
+        <td class="text-center ">
           <img src="${iconUrl}" alt="アイコン" style="width:15px; height:15px;">
         </td>
+        <td class='text-nowrap'>${site.name}</td>
         <td class='text-nowrap'>${site.url}</td>
         <td class='text-nowrap'>${site.searchQuery}</td>
         <td class='text-nowrap'>${site.inputForm}</td>
         <td class='text-nowrap'>${site.inputButton}</td>
       `;
       siteQueryListBody.innerHTML += row.outerHTML;
+    });
+    const deleteButton = document.querySelector('#delete-btn-outlined');
+    function toggleDeleteVisibility(checked) {
+      document.querySelectorAll('.delete-list-th, .delete-list-td').forEach((element) => {
+        element.classList.toggle('d-none', !checked);
+      });
+    };
+    toggleDeleteVisibility(deleteButton.checked);
+    deleteButton.addEventListener("change", (e) => {
+      toggleDeleteVisibility(e.target.checked);
     });
   });
 }
@@ -264,11 +277,9 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
         const siteIndex = sites.findIndex(site => site.name === name);
         if (siteIndex === -1) {
           sites.push({ name, url, searchQuery, inputForm: "", inputButton: "" });
-          console.log(`${name} を追加しました。`);
           messageOutput(dateTime(), `${name} を追加しました。`);
         } else {
           sites[siteIndex] = { name, url, searchQuery };
-          console.log(`${name} は既に存在します。上書き登録しました。`);
           messageOutput(dateTime(), `${name} は既に存在します。上書き登録しました。`);
         }
       }
@@ -374,6 +385,25 @@ document.addEventListener('DOMContentLoaded', function () {
     searchUrlInput.value = '';
   });
 
+  // リストの削除ボタン
+  document.addEventListener("click", function (e) {
+    if (e.target.closest(".delete-list-btn")) {
+      const row = e.target.closest("tr");
+      if (row) {
+        const siteName = row.querySelector("td:nth-child(3)").textContent.trim(); // サイト名を取得
+        // row.remove(); // 行を削除
+        chrome.storage.local.get(["sites"], (data) => {
+          const sites = data.sites ?? [];
+          const updatedSites = sites.filter((site) => site.name !== siteName);
+          chrome.storage.local.set({ sites: updatedSites }, () => {
+            console.log("Storage updated:", updatedSites);
+            customSearchPreview();
+          });
+        });
+      }
+
+    }
+  });
 
 
   // メッセージパネルの表示・非表示を切り替える
