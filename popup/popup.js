@@ -1,31 +1,23 @@
-// 初期化処理
-let isEnabled = false; // ツールの有効状態を示すフラグ（初期値はfalse）
+let isEnabled = false;
 
-const enabledElement = document.getElementById('enabled'); // チェックボックス（トグルボタン）要素を取得
+const enabledElement = document.getElementById('enabled');
 const panelButton = document.getElementById('panelButton');
 const messagePanel = document.getElementById('messagePanel');
-const messageDiv = document.getElementById('message'); // メッセージ表示用のdiv要素を取得
+const messageDiv = document.getElementById('message');
 const manifestData = chrome.runtime.getManifest();
 
-// チェックボックス（トグルボタン）の状態が変更されたとき，ツールの有効/無効状態を更新
 enabledElement.addEventListener('change', (event) => {
-  isEnabled = event.target.checked; // チェックボックス（トグルボタン）の選択状態を取得
-
-  // 現在の有効/無効状態をストレージに保存
+  isEnabled = event.target.checked;
   chrome.storage.local.set({ isEnabled: isEnabled }, () => {
-    // 有効/無効状態に応じてメッセージを出力
     messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 はONになっています` : `選択＆カスタム検索 はOFFになっています`);
   });
 });
 
-
-// 保存された設定（'settings'と'isEnabled'）を読み込む
 chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
   if (enabledElement) {
-    isEnabled = data.isEnabled || false; // 'isEnabled'が未設定の場合はデフォルトでfalseを使用
-    enabledElement.checked = isEnabled; // チェックボックス（トグルボタン）の状態を'isEnabled'の値に設定
+    isEnabled = data.isEnabled || false;
+    enabledElement.checked = isEnabled
   }
-  // 有効/無効状態に応じてメッセージを出力
   messageOutput(dateTime(), isEnabled ? `選択＆カスタム検索 はONになっています` : `選択＆カスタム検索 はOFFになっています`);
 });
 
@@ -48,7 +40,7 @@ const defaultSites = [
   // { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
 ];
 
-customSearchPreview();
+
 function customSearchPreview() {
   chrome.storage.local.get(['sites', 'iconNum', 'theme'], (data) => {
     const sites = data.sites ?? defaultSites;
@@ -92,7 +84,7 @@ function customSearchPreview() {
     chrome.storage.local.set({ sites: sites });
     sites.forEach((site, index) => {
       const selBox = document.createElement("a");
-      console.log("site", site);
+      // console.log("site", site);
       const iconUrl = getFaviconUrl(site.url);
       selBox.href = site.url;
       selBox.id = site.name;
@@ -121,12 +113,12 @@ function customSearchPreview() {
 
   });
 }
+customSearchPreview();
 
 const changeThemeIcon = document.querySelector('#change-theme-icon');
 changeThemeIcon.addEventListener('click', (event) => {
   chrome.storage.local.get(['theme'], (data) => {
     const theme = data.theme;
-    console.log("newTheme", theme)
     chrome.storage.local.set({ theme: theme === 'light' ? 'dark' : 'light' }, () => {
       customSearchPreview();
     });
@@ -200,7 +192,6 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 
   // Detect search type
   const params = url.searchParams;
-  console.log("params", params);
   if (params.toString()) {
     searchType.textContent = "クエリパラメータ検索";
 
@@ -252,7 +243,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
   // Register button click
   document.getElementById("registerButton").onclick = function () {
     chrome.storage.local.get(['sites'], (data) => {
-      console.log("data.sites", data.sites);
+      // console.log("data.sites", data.sites);
       let sites = data.sites ?? [];
       const name = url.hostname;
       let template, basePath, searchQuery;
@@ -406,7 +397,6 @@ document.addEventListener('DOMContentLoaded', function () {
           const sites = data.sites ?? [];
           const updatedSites = sites.filter((site) => site.name !== siteName);
           chrome.storage.local.set({ sites: updatedSites }, () => {
-            console.log("Storage updated:", updatedSites);
             customSearchPreview();
           });
         });
@@ -468,40 +458,20 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-// 設定をストレージに保存する関数
-function saveSettings(datetime, message, value) {
-  const settings = {
-    sampleValue: value,
-    // storageに保存するための設定をここに追加する
-  };
-
-  // ストレージに設定を保存し，保存完了後にメッセージを出力
-  chrome.storage.local.set({ settings: settings }, () => {
-    messageOutput(datetime, message); // 保存時の日時とメッセージを出力
-  });
-}
-
-
-// popup.html内のリンクを新しいタブで開けるように設定する関数
-// linkにはgetElementByIdで取得した要素またはURL文字列を渡す
 function clickURL(link) {
-  const url = link.href ? link.href : link; // linkが要素ならhref属性からURLを取得，URL文字列ならそのまま使用
-
-  // linkがHTML要素の場合のみクリックイベントを設定
+  const url = link.href ? link.href : link;
   if (link instanceof HTMLElement) {
     link.addEventListener('click', (event) => {
-      event.preventDefault(); // デフォルトのリンク遷移を防止
-      chrome.tabs.create({ url }); // 新しいタブでURLを開く
+      event.preventDefault();
+      chrome.tabs.create({ url });
     });
   }
 }
 
-
-// メッセージを指定した日時とともに出力する関数
 function messageOutput(datetime, message) {
   messageDiv.innerHTML += '<p class="m-0">' + datetime + ' ' + message + '</p>'; // <p> タグで囲んでメッセージを新しい行に追加
 }
-// メッセージをクリアする処理
+
 document.getElementById('messageClearButton').addEventListener('click', () => {
   messageDiv.innerHTML = '<p class="m-0">' + '' + '</p>'; // メッセージ表示エリアを空にする
 });
@@ -510,16 +480,12 @@ document.getElementById('messageClearButton').addEventListener('click', () => {
 // 現在の時間を取得する
 // "年-月-日 時:分" の形式で返す（例：2024-11-02 10:52）
 function dateTime() {
-  const now = new Date();// 現在の日付と時刻を取得
-
-  // 各部分の値を取得し2桁に整形
+  const now = new Date();
   const year = now.getFullYear();                                    // 年
   const month = String(now.getMonth() + 1).padStart(2, '0');         // 月（0始まりのため+1）
   const day = String(now.getDate()).padStart(2, '0');                // 日
   const hours = String(now.getHours()).padStart(2, '0');             // 時
   const minutes = String(now.getMinutes()).padStart(2, '0');         // 分
-
-  // フォーマットした日時を文字列で返す
   const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
   return formattedDateTime;
 }
