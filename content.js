@@ -4,12 +4,11 @@ const manifestData = chrome.runtime.getManifest();
 // ツールの有効/無効を処理する関数
 const handleTool = (isEnabled) => {
   if (isEnabled) {
-    console.log(`${manifestData.name} がONになりました`);
-    // console.log("isAfterLoad1111", isSearchLoad);
+    // console.log(`${manifestData.name} がONになりました`);
     document.addEventListener('mouseup', eventHandler);
     windowOnload();
   } else {
-    console.log(`${manifestData.name} がOFFになりました`);
+    // console.log(`${manifestData.name} がOFFになりました`);
     document.removeEventListener('mouseup', eventHandler);
   }
 };
@@ -17,7 +16,6 @@ const handleTool = (isEnabled) => {
 
 // 最初の読み込みまたはリロード後に実行する処理
 chrome.storage.local.get(['settings', 'isEnabled', 'selectedText'], (data) => {
-  console.log("data", data)
   isEnabled = data.isEnabled !== undefined ? data.isEnabled : isEnabled;
   handleTool(isEnabled);
 });
@@ -40,20 +38,14 @@ chrome.storage.onChanged.addListener((changes) => {
 
 // ページが読み込まれた後に実行
 function windowOnload() {
-  console.log("events");
   chrome.storage.local.get(['selectedText', 'sites', 'isSearchLoad'], (data) => {
     const { selectedText, sites, isSearchLoad } = data;
-    console.log('data:', data);
-    console.log('受信したテキスト:', selectedText);
-    console.log("isSearchLoad", isSearchLoad);
     if (!isSearchLoad || !selectedText) return;
 
     const currentUrl = window.location.href;
     sites.forEach((site) => {
       if (currentUrl.includes(site.url)) {
-        console.log('site:', site);
         const searchInput = document.querySelector(site.inputForm);
-        console.log('searchInput:', searchInput);
         if (searchInput) {
           performSearch(searchInput, selectedText);
         } else {
@@ -77,15 +69,13 @@ function performSearch(searchInput, text) {
   searchInput.dispatchEvent(new Event('input', { bubbles: true }));
   const searchForm = searchInput.closest('form');
   chrome.storage.local.set({ selectedText: "", isSearchLoad: false }, () => {
-    console.log("isSearchLoadをfalseにしました");
-    console.log("selectedTextを空にしました");
     if (searchForm) {
       try {
         searchForm.submit();
-        console.log('submit');
+        // console.log('submit');
       } catch (e) {
         searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-        console.log('enter');
+        // console.log('enter');
       }
     }
   });
@@ -96,10 +86,10 @@ function performSearch(searchInput, text) {
 function eventHandler() {
   const selectedText = window.getSelection().toString().trim();
   if (!selectedText) { return; }
-  console.log('選択されたテキスト:', selectedText);
+  // console.log('選択されたテキスト:', selectedText);
   chrome.storage.local.set({ selectedText: selectedText }, () => {
     customSearch(selectedText);
-    console.log("選択されたテキストを保存しました");
+    // console.log("選択されたテキストを保存しました");
   });
 };
 
@@ -111,11 +101,8 @@ function customSearch(selectedText) {
 
   const range = selection.getRangeAt(0); // 選択範囲を取得
   const rect = range.getBoundingClientRect(); // 選択範囲の座標を取得
-  console.log("rect", rect);
-  console.log("rect.bottom + window.scrollY + 100", rect.bottom + window.scrollY + 100);
   // オーバーレイ要素を作成
   chrome.storage.local.get(['sites', 'selectPosition', 'textDistance', 'theme', 'iconNum', 'searchMode'], (data) => {
-    console.log("data.selectPosition", data.selectPosition);
     const { sites, selectPosition, textDistance, theme: newTheme, iconNum, searchMode } = data;
 
     const selBoxGroup = document.createElement('div');
@@ -124,7 +111,7 @@ function customSearch(selectedText) {
     const padding = 4;
     const buttonWidth = 20;
     const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
-    console.log("maxWidth", maxWidth);
+    // console.log("maxWidth", maxWidth);
 
     const positions = {
       'default': { top: `${rect.bottom + window.scrollY + Number(textDistance)}px`, left: `${rect.left + window.scrollX}px`, position: 'absolute' },
@@ -156,9 +143,7 @@ function customSearch(selectedText) {
 
     sites.forEach((site, index) => {
       const selBox = document.createElement("a");
-      // console.log("site", site);
       const iconUrl = getFaviconUrl(site.url);
-      // console.log("iconURL", iconUrl);
       selBox.href = site.url;
       selBox.id = site.name;
       selBox.target = "_blank";
@@ -169,9 +154,7 @@ function customSearch(selectedText) {
       selBox.addEventListener('click', function (event) {
         event.preventDefault();
         chrome.storage.local.set({ isSearchLoad: site.searchQuery ? false : true }, function () {
-          console.log("isSearchLoadをtrueにしました");
           const searchUrl = site.searchQuery ? `${site.url}${site.searchQuery}${encodeURIComponent(selectedText)}` : site.url;
-          console.log("searchMode", searchMode);
           switch (searchMode) {
             case 'new-tab':
               window.open(searchUrl, '_blank');
@@ -202,11 +185,9 @@ function customSearch(selectedText) {
     offBtn.innerHTML = hiddenIcon;
     selBoxGroup.append(offBtn);
 
-    // ボタングループのHTML
-    console.log("selBoxGroup", selBoxGroup);
-    console.log("selBoxGroup.children", selBoxGroup.children);
+    // console.log("selBoxGroup", selBoxGroup);
+    // console.log("selBoxGroup.children", selBoxGroup.children);
 
-    // bodyに追加
     document.body.appendChild(selBoxGroup);
 
     // オーバーレイを消す処理
@@ -216,7 +197,6 @@ function customSearch(selectedText) {
         document.removeEventListener('mousedown', rmOverlay);
       }
     };
-
     document.addEventListener('mousedown', rmOverlay);
 
     // const offBtn = document.getElementById('off-btn');
@@ -224,32 +204,16 @@ function customSearch(selectedText) {
       chrome.storage.local.set({ isEnabled: false }, () => {
         selBoxGroup.remove();
         offBtn.removeEventListener('mousedown', rmOffBtn);
-        console.log("オフにしました");
       });
     };
-
     offBtn.addEventListener('mousedown', rmOffBtn);
-
-
   });
 
 }
-
-
 
 function getFaviconUrl(domain) {
   return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
 }
 
-function autoSearch(selectedText) {
-  const searchInput = document.querySelector('input[name="search"]'); // 検索ボックスを指定
-  if (searchInput) {
-    searchInput.value = selectedText; // テキストを自動入力
-    const searchForm = searchInput.closest('form');
-    if (searchForm) {
-      searchForm.submit(); // 自動でフォームを送信
-    }
-  }
-}
 
 
