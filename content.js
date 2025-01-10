@@ -190,6 +190,18 @@ function customSearch(selectedText) {
       });
     });
 
+    const offBtn = document.createElement('button');
+    offBtn.className = `btn1 selBoxGroup btn-icon1 ${newTheme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
+    offBtn.style.width = '28px';
+    offBtn.id = 'off-button';
+    const hiddenIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+        <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+      </svg>
+    `;
+    offBtn.innerHTML = hiddenIcon;
+    selBoxGroup.append(offBtn);
+
     // ボタングループのHTML
     console.log("selBoxGroup", selBoxGroup);
     console.log("selBoxGroup.children", selBoxGroup.children);
@@ -197,16 +209,32 @@ function customSearch(selectedText) {
     // bodyに追加
     document.body.appendChild(selBoxGroup);
 
-    // オーバーレイを消す処理（クリックで削除）
-    document.addEventListener('mousedown', function removeOverlay(e) {
+    // オーバーレイを消す処理
+    const rmOverlay = (e) => {
       if (!selBoxGroup.contains(e.target)) {
         selBoxGroup.remove();
-        document.removeEventListener('mousedown', removeOverlay);
+        document.removeEventListener('mousedown', rmOverlay);
       }
-    });
+    };
+
+    document.addEventListener('mousedown', rmOverlay);
+
+    // const offBtn = document.getElementById('off-btn');
+    const rmOffBtn = () => {
+      chrome.storage.local.set({ isEnabled: false }, () => {
+        selBoxGroup.remove();
+        offBtn.removeEventListener('mousedown', rmOffBtn);
+        console.log("オフにしました");
+      });
+    };
+
+    offBtn.addEventListener('mousedown', rmOffBtn);
+
+
   });
 
 }
+
 
 
 function getFaviconUrl(domain) {
