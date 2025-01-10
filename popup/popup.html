@@ -270,42 +270,63 @@
       </div>
     </div>
 
-    <!-- チュートリアル -->
+    <!-- ドキュメント -->
     <div class="tab-pane fade mt-2 mx-2" id="document" role="tabpanel" style="margin-bottom: 200px;"
       aria-labelledby="document-tab">
-      <p class="mb-1 fw-bold">
-        選択＆カスタム検索 を有効にする
-      </p>
-      <ul class="">
-        <li>拡張機能のポップアップを開き，「選択＆カスタム検索 をONにする」のトグルボタンをクリック
-          <div>無効にする場合も同じ操作を行ってください。</div>
-        </li>
-      </ul>
-      <p class="mb-1 fw-bold">
-        設定
-      </p>
-      <ul>
-        <li>
-
-        </li>
-        <li>
-
-        </li>
-        <li>
-
-        </li>
-      </ul>
-      <p class="mb-1 fw-bold">
-        操作方法
-      </p>
-      <ul>
-        <li>
-
-        </li>
-        <li>
-
-        </li>
-      </ul>
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+              aria-expanded="true" aria-controls="collapseOne">
+              チュートリアル
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body p-3">
+              <p class="mb-1 fw-bold">
+                選択＆カスタム検索 をONにする
+              </p>
+              <ul class="">
+                <li>拡張機能のポップアップを開き，「選択＆カスタム検索 をONにする」のトグルボタンをクリック
+                  <div>無効にする場合も同じ操作を行ってください。</div>
+                </li>
+                <img src="/popup/images/on-off.png" alt="" class="w-100">
+              </ul>
+              <p class="mb-1 fw-bold">
+                検索サイト登録
+              </p>
+              <ol>
+                <li class="mb-1">
+                  検索したいサイトで一度キーワード検索を行います。
+                </li>
+                <li class="mb-1">
+                  キーワード検索結果のURLを下のフォームに入力します。
+                </li>
+                <li class="mb-1">
+                  検索形式に応じて，検索に使用するパラメータやパスを設定し，サイトを登録します。
+                </li>
+              </ol>
+              <div class="w-100 d-flex justify-content-center mb-4"><img src="/popup/images/search-register.png" alt=""
+                  class="w-75 "></div>
+              <p class="mb-1 fw-bold">
+                操作方法
+              </p>
+              <ol>
+                <li class="mb-1">
+                  任意のテキストを選択します。
+                </li>
+                <li class="mb-1">
+                  「選択＆カスタム検索」をONにした状態でテキストを選択すると，検索アイコンボックスが表示されます。
+                  <img src="/popup/images/search-icon-group.png" alt="" class="w-100 ">
+                </li>
+                <li class="mb-1">
+                  アイコンボックスから検索したいエンジンやサイトのアイコンをクリックすると，そのサイトでの検索結果ページに移動します。
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 詳細情報 -->
@@ -313,7 +334,7 @@
       aria-labelledby="info-tab">
       <ul class="list-group list-group-flush">
         <h5 class="pt-3 ps-2 mb-2">詳細</h5>
-
+        <a id="issue-link" class="text-end" href="https://forms.gle/qkaaa2E49GQ5QKMT8">問題を報告する</a>
         <li class="list-group-item">
           <a class=""
             href="https://chromewebstore.google.com/detail/meet-captions-logger-meet/ngbmoalopgfhbfkjidlblfeheehaniie?authuser=0&hl=ja"
