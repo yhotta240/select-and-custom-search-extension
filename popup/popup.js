@@ -107,7 +107,7 @@ function customSearchPreview() {
     const offBtn = document.createElement('button');
     offBtn.className = `btn1 selBoxGroup btn-icon1 ${theme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
     offBtn.style.width = '28px';
-    offBtn.id ='off-button';
+    offBtn.id = 'off-button';
     const hiddenIcon = `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
         <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
@@ -118,7 +118,7 @@ function customSearchPreview() {
     // 最初に挿入
     previewElement.innerHTML = selBoxGroup.outerHTML;
     listSites();
-    
+
   });
 }
 
@@ -302,8 +302,8 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 
 // DOMの読み込み完了を監視し，完了後に実行
 document.addEventListener('DOMContentLoaded', function () {
-  
-  
+
+
   // アイコンの個数を設定
   const iconNumRange = document.querySelector('#icon-num-range');
   const iconNumText = document.querySelector('#icon-num-text');
@@ -434,6 +434,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 情報タブ: 
   // ストアリンクのクリックイベントを設定
+  const issueLink = document.getElementById('issue-link');
+  if (issueLink) clickURL(issueLink);
   const storeLink = document.getElementById('store_link');
   if (storeLink) clickURL(storeLink);
   // manifest.jsonから拡張機能の情報を取得
