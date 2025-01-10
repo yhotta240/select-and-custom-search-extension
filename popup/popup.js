@@ -32,7 +32,7 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
 
 const defaultSites = [
   { name: "google.com", url: "https://google.com", searchQuery: "/search?q=" },
-  { name: "youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=" },
+  { name: "www.youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=" },
   { name: "x.com", url: "https://x.com", searchQuery: "/search?q=" },
   { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=" },
   { name: "search.rakuten.co.jp", url: "https://search.rakuten.co.jp", searchQuery: "/search/mall/" },
