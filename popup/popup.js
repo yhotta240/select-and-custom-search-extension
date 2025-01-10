@@ -35,14 +35,17 @@ const defaultSites = [
   { name: "youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=" },
   { name: "x.com", url: "https://x.com", searchQuery: "/search?q=" },
   { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=" },
+  { name: "search.rakuten.co.jp", url: "https://search.rakuten.co.jp", searchQuery: "/search/mall/" },
   { name: "chatgpt.com", url: "https://chatgpt.com", searchQuery: "/search?q=", },
   { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "/search/new?q=" },
   { name: "open.spotify.com", url: "https://open.spotify.com", searchQuery: "/search/" },
   { name: "www.pixiv.net", url: "https://www.pixiv.net", searchQuery: "/search?q=" },
-  { name: "tver.jp", url: "https://tver.jp", searchQuery: "/search/" },
   { name: "github.com", url: "https://github.com", searchQuery: "/search?q=" },
-  { name: "qiita.com", url: "https://qiita.com", searchQuery: "/search?q=" },
-  { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
+  { name: "www.deepl.com", url: "https://www.deepl.com", searchQuery: "/#en/ja/" },
+  { name: "ja.wikipedia.org", url: "https://ja.wikipedia.org", searchQuery: "/wiki/" },
+  { name: "store.steampowered.com", url: "https://store.steampowered.com", searchQuery: "/search/?term=" },
+  { name: "www.cmoa.jp", url: "https://www.cmoa.jp", searchQuery: "/search/result/?header_word=" },
+  // { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
 ];
 
 customSearchPreview();
@@ -51,9 +54,7 @@ function customSearchPreview() {
     const sites = data.sites ?? defaultSites;
     const iconNum = data.iconNum ?? 8;
     const theme = data.theme ?? 'light';
-    console.log('theme', theme);
-
-    const changeTheme = document.getElementById('change-theme');
+    const changeTheme = document.querySelector('#change-theme');
     changeTheme.checked = theme === 'dark';
     const changeThemeIcon = document.querySelector('#change-theme-icon');
     const lightIcon = `
@@ -69,7 +70,6 @@ function customSearchPreview() {
     </svg>
     `;
     changeThemeIcon.innerHTML = theme === 'light' ? lightIcon : darkIcon;
-
 
     const selBoxGroup = document.createElement('div');
     const gap = 2;
@@ -89,8 +89,7 @@ function customSearchPreview() {
     selBoxGroup.role = "group";
     selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
     selBoxGroup.id = "search-box"
-    chrome.storage.local.set({ sites: sites }, () => {
-    });
+    chrome.storage.local.set({ sites: sites });
     sites.forEach((site, index) => {
       const selBox = document.createElement("a");
       console.log("site", site);
@@ -101,28 +100,38 @@ function customSearchPreview() {
       selBox.className = `btn1 selBoxGroup btn-icon1 m-auto1 ${theme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
       selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
       selBoxGroup.append(selBox);
-      selBox.addEventListener('click', () => {
-        // const searchUrl = `${site.url}/${site.searchQuery}${encodeURIComponent(selectedText)}`;
-        // window.open(searchUrl, '_blank');
-      });
     });
 
     // #settings 要素を取得
     const previewElement = document.querySelector("#settings-preview");
-
+    const offBtn = document.createElement('button');
+    offBtn.className = `btn1 selBoxGroup btn-icon1 ${theme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
+    offBtn.style.width = '28px';
+    offBtn.id ='off-button';
+    const hiddenIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+        <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+      </svg>
+    `;
+    offBtn.innerHTML = hiddenIcon;
+    selBoxGroup.append(offBtn);
     // 最初に挿入
-    // previewElement.appendChild(selBoxGroup);
     previewElement.innerHTML = selBoxGroup.outerHTML;
     listSites();
-
-    changeThemeIcon.addEventListener('click', () => {
-      customSearchPreview();
-      chrome.storage.local.set({ theme: theme === 'light' ? 'dark' : 'light' }, () => {
-      });
-    });
+    
   });
 }
 
+const changeThemeIcon = document.querySelector('#change-theme-icon');
+changeThemeIcon.addEventListener('click', (event) => {
+  chrome.storage.local.get(['theme'], (data) => {
+    const theme = data.theme;
+    console.log("newTheme", theme)
+    chrome.storage.local.set({ theme: theme === 'light' ? 'dark' : 'light' }, () => {
+      customSearchPreview();
+    });
+  });
+});
 
 function listSites() {
   const deleteIcon = `
@@ -151,8 +160,8 @@ function listSites() {
         <td class='text-nowrap'>${site.name}</td>
         <td class='text-nowrap'>${site.url}</td>
         <td class='text-nowrap'>${site.searchQuery}</td>
-        <td class='text-nowrap'>${site.inputForm}</td>
-        <td class='text-nowrap'>${site.inputButton}</td>
+        <td class='text-nowrap d-none'>${site.inputForm}</td>
+        <td class='text-nowrap d-none'>${site.inputButton}</td>
       `;
       siteQueryListBody.innerHTML += row.outerHTML;
     });
@@ -183,7 +192,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
   const paramSelect = document.getElementById("paramSelect");
   const templateSection = document.getElementById("templateSection");
   const searchTemplate = document.getElementById("searchTemplate");
-  const selectLabel = document.querySelector('#select-label');
+  const selectLabel = document.getElementById('select-label');
 
   // Reset UI
   paramSelect.innerHTML = "";
@@ -276,7 +285,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
       function addSite(name, url, searchQuery) {
         const siteIndex = sites.findIndex(site => site.name === name);
         if (siteIndex === -1) {
-          sites.push({ name, url, searchQuery, inputForm: "", inputButton: "" });
+          sites.push({ name, url, searchQuery });
           messageOutput(dateTime(), `${name} を追加しました。`);
         } else {
           sites[siteIndex] = { name, url, searchQuery };
@@ -293,7 +302,8 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 
 // DOMの読み込み完了を監視し，完了後に実行
 document.addEventListener('DOMContentLoaded', function () {
-
+  
+  
   // アイコンの個数を設定
   const iconNumRange = document.querySelector('#icon-num-range');
   const iconNumText = document.querySelector('#icon-num-text');
