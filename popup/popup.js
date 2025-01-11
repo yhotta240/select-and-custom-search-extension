@@ -343,15 +343,17 @@ document.addEventListener('DOMContentLoaded', function () {
   chrome.storage.local.get(['selectPosition'], ({ selectPosition: value = 'default' }) => {
     selectPosition.value = value;
     searchBoxDistance.classList.toggle('d-none', value !== 'default');
+    const optionText = selectPosition.options[selectPosition.selectedIndex].text;
     chrome.storage.local.set({ selectPosition: value }, () => {
-      messageOutput(dateTime(), `配置： ${value}`);
+      messageOutput(dateTime(), `配置： ${optionText}`);
       searchBoxDistance.classList.toggle('d-none', value !== 'default');
     });
   });
-
+  
   selectPosition.addEventListener('change', ({ target: { value } }) => {
+    const optionText = selectPosition.options[selectPosition.selectedIndex].text;
     chrome.storage.local.set({ selectPosition: value }, () => {
-      messageOutput(dateTime(), `配置が ${value} に変更されました`);
+      messageOutput(dateTime(), `配置が ${optionText} に変更されました`);
       searchBoxDistance.classList.toggle('d-none', value !== 'default');
     });
   });
@@ -360,14 +362,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const textDistanceInput = document.querySelector('#select-text-distance');
   const textDistanceLabel = document.querySelector('#select-text-distance-label');
 
-  chrome.storage.local.get(['textDistance'], (data) => {
+  chrome.storage.local.get(['textDistance', 'selectPosition'], (data) => {
     const value = data.textDistance ?? 10;
-    textDistanceLabel.textContent = value;
-    textDistanceInput.value = value;
-    textDistanceLabel.textContent = value;
-    chrome.storage.local.set({ textDistance: value }, () => {
+    const position = data.selectPosition ?? 'default';
+    textDistanceLabel.textContent = textDistanceInput.value = value;
+    if (position === 'default') {
       messageOutput(dateTime(), `選択したテキストの下距離：${value}`);
-    });
+    }
   });
 
   textDistanceInput.addEventListener('input', (event) => {
