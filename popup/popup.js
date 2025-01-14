@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
       searchBoxDistance.classList.toggle('d-none', value !== 'default');
     });
   });
-  
+
   selectPosition.addEventListener('change', ({ target: { value } }) => {
     const optionText = selectPosition.options[selectPosition.selectedIndex].text;
     chrome.storage.local.set({ selectPosition: value }, () => {
@@ -366,9 +366,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const value = data.textDistance ?? 10;
     const position = data.selectPosition ?? 'default';
     textDistanceLabel.textContent = textDistanceInput.value = value;
-    if (position === 'default') {
-      messageOutput(dateTime(), `選択したテキストの下距離：${value}`);
-    }
+    chrome.storage.local.set({ textDistance: value }, () => {
+      if (position === 'default') {
+        messageOutput(dateTime(), `選択したテキストの下距離：${value}`);
+      }
+    });
   });
 
   textDistanceInput.addEventListener('input', (event) => {
