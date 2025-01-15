@@ -94,18 +94,17 @@ function eventHandler() {
 };
 
 function customSearch(selectedText) {
-  // 選択範囲を取得
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
 
-
-  const range = selection.getRangeAt(0); // 選択範囲を取得
-  const rect = range.getBoundingClientRect(); // 選択範囲の座標を取得
+  const range = selection.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
   // オーバーレイ要素を作成
-  chrome.storage.local.get(['sites', 'selectPosition', 'textDistance', 'theme', 'iconNum', 'searchMode'], (data) => {
-    const { sites, selectPosition, textDistance, theme: newTheme, iconNum, searchMode } = data;
+  chrome.storage.local.get(['sites', 'selectPosition', 'textDistance', 'theme', 'iconNum', 'searchMode', 'isExpanded'], (data) => {
+    const { sites, selectPosition, textDistance, theme: newTheme, iconNum, searchMode, isExpanded } = data;
 
-    const selBoxGroup = document.createElement('div');
+    const selBoxElement = document.createElement('div');
+    selBoxElement.className = 'my-extension-root sel-box-element';
     const gap = 2;
     const groupPadding = 6;
     const padding = 4;
@@ -123,9 +122,8 @@ function customSearch(selectedText) {
 
     const { top, left, right, bottom, position } = positions[selectPosition] || positions['default'];
     const backgroundColor = newTheme === 'dark' ? '#292e33' : '#ffffff';
-    const btnThemeColor = newTheme === 'dark' ? 'btn-dark1' : 'btn-light1';
 
-    Object.assign(selBoxGroup.style, {
+    Object.assign(selBoxElement.style, {
       position: position || 'fixed',
       top: top,
       left: left,
@@ -136,12 +134,20 @@ function customSearch(selectedText) {
       backgroundColor: backgroundColor,
     });
 
-    selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1";
+    const selBoxGroup = document.createElement('div');
+    const btnThemeColor = newTheme === 'dark' ? 'btn-dark1' : 'btn-light1';
+
+    selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1 ";
+    selBoxGroup.style.height = isExpanded
+      ? `${20 + (padding * 2) + gap + groupPadding}px`
+      : 'auto';
+    selBoxGroup.style.backgroundColor = backgroundColor;
     selBoxGroup.role = "group";
     selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
     selBoxGroup.id = "search-box";
 
     sites.forEach((site, index) => {
+      if (index >= iconNum - 1 && isExpanded) return;
       const selBox = document.createElement("a");
       const iconUrl = getFaviconUrl(site.url);
       selBox.href = site.url;
@@ -187,22 +193,47 @@ function customSearch(selectedText) {
 
     // console.log("selBoxGroup", selBoxGroup);
     // console.log("selBoxGroup.children", selBoxGroup.children);
+    const expandBtn = document.createElement('button');
+    expandBtn.className = `expand-btn ${newTheme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
+    expandBtn.id = 'expand-button';
+    const expandIcon = {
+      expand: `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-compact-down" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67"/>
+      </svg>
+      `,
+      collapse: `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-compact-up" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M7.776 5.553a.5.5 0 0 1 .448 0l6 3a.5.5 0 1 1-.448.894L8 6.56 2.224 9.447a.5.5 0 1 1-.448-.894z"/>
+      </svg>
+      `
+    };
+    expandBtn.innerHTML = expandIcon[isExpanded ? 'expand' : 'collapse'];
+    expandBtn.addEventListener('click', () => {
+      const newHeight = isExpanded ? 'auto' : `${20 + padding * 2 + gap + groupPadding}px`;
+      selBoxGroup.style.height = newHeight;
+      selBoxElement.outerHTML = "";
+      expandBtn.innerHTML = expandIcon[isExpanded ? 'expand' : 'collapse'];
+      chrome.storage.local.set({ isExpanded: !isExpanded });
+    });
+    selBoxElement.appendChild(selBoxGroup);
+    selBoxElement.appendChild(expandBtn);
 
-    document.body.appendChild(selBoxGroup);
+    document.body.appendChild(selBoxElement);
+
 
     // オーバーレイを消す処理
     const rmOverlay = (e) => {
-      if (!selBoxGroup.contains(e.target)) {
-        selBoxGroup.remove();
+      if (!selBoxElement.contains(e.target)) {
+        selBoxElement.remove();
         document.removeEventListener('mousedown', rmOverlay);
       }
     };
     document.addEventListener('mousedown', rmOverlay);
 
-    // const offBtn = document.getElementById('off-btn');
     const rmOffBtn = () => {
       chrome.storage.local.set({ isEnabled: false }, () => {
-        selBoxGroup.remove();
+        selBoxElement.remove();
         offBtn.removeEventListener('mousedown', rmOffBtn);
       });
     };
