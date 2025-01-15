@@ -1,8 +1,8 @@
 /* ボタングループの全体スタイル */
-.my-extension-root.btn-group1 {
+.my-extension-root.sel-box-element {
     z-index: 2147483647;
     border-radius: 0.5rem;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 6px;
     /* background-color: #1d2124; */
     background-color: #ffffff;
     vertical-align: middle;
@@ -11,13 +11,44 @@
     display: inline-flex;
     flex-wrap: wrap;
     /* 折り返し対応 */
+    /* justify-content: flex-start; */
+    /* 左寄せ */
+    /* margin-left: auto; */
+}
+
+.my-extension-root.btn-group1 {
+    /* z-index: 2147483647; */
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    /* box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px; */
+    background-color: #ffffff;
+    vertical-align: middle;
+    height: auto;
+    display: inline-flex;
+    flex-wrap: wrap;
+    /* 折り返し対応 */
     justify-content: flex-start;
     /* 左寄せ */
     padding: 6px;
     gap: 2px;
-    /* margin-left: auto; */
 }
-
+.expand-btn{
+    /* display: inline-flex; */
+    vertical-align: middle;
+    border: 1px solid transparent;
+    /* border-radius: 0.5rem; */
+    line-height: 1.5;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.5rem;
+    width: 100%;
+    /* height: 100%; */
+    padding: 0px;
+    margin: 0px;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
 
 /* ボタンのスタイル */
 .my-extension-root .btn1 {
