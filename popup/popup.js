@@ -87,7 +87,6 @@ function customSearchPreview() {
     selBoxGroup.style.height = isExpanded
       ? `${20 + (padding * 2) + gap + groupPadding}px`
       : 'auto';
-    console.log("selBoxGroup.style.height", selBoxGroup.style.height);
     selBoxGroup.style.backgroundColor = theme === 'light' ? '#ffffff' : '#292e33';
     selBoxGroup.role = "group";
     selBoxGroup.ariaLabel = "search-box";
@@ -158,7 +157,7 @@ document.addEventListener('click', (event) => {
   if (target.closest('#expand-button')) {
     chrome.storage.local.get(['isExpanded'], (data) => {
       const isExpanded = data.isExpanded ?? false;
-      console.log('isExpanded', isExpanded);
+      // console.log('isExpanded', isExpanded);
       chrome.storage.local.set({ isExpanded: !isExpanded }, () => {
         customSearchPreview();
       });
@@ -337,9 +336,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const iconWrap = document.querySelector('#icon-wrap');
   chrome.storage.local.get(['isIconWrap'], (data) => {
-    const isIconWrap = data.isIconWrap ?? true;
+    const isIconWrap = data.isIconWrap ?? false;
     iconWrap.checked = isIconWrap;
-    messageOutput(dateTime(), `アイコンの折り返しh：${isIconWrap ? 'ON' : 'OFF'} `);
+    messageOutput(dateTime(), `アイコンの折り返し：${isIconWrap ? 'ON' : 'OFF'} `);
   });
 
   iconWrap.addEventListener('change', (event) => {
