@@ -126,8 +126,6 @@ function customSearch(selectedText) {
 
     // const isWrapWidth = left + maxWidth > windowWidth;
     const isWrapWidth = selectPosition === 'default' && left + maxWidth > windowWidth;
-    console.log("isWrapWidth", isWrapWidth);
-    console.log("isIconWrap && isWrapWidth", !isIconWrap && isWrapWidth);
 
     if (selectPosition === 'default' && isWrapWidth) {
       const width = windowWidth - left;
@@ -135,10 +133,9 @@ function customSearch(selectedText) {
       const iconsButton = iconsWidth / (buttonWidth + 2 * padding + gap);
 
       if (iconNum > iconsButton) {
-        console.log("iconsButton - Math.floor(iconsButton)", iconsButton - Math.floor(iconsButton));
         newIconsButton = isIconWrap ? Math[iconsButton - Math.floor(iconsButton) >= 0.95 ? 'ceil' : 'floor'](iconsButton) : undefined;
         maxWidth = isIconWrap ? (newIconsButton * (buttonWidth + 2 * padding + gap)) - gap + 2 * groupPadding : maxWidth;
-        console.log("newIconsButton", newIconsButton);
+        // console.log("newIconsButton", newIconsButton);
       }
     }
     const backgroundColor = newTheme === 'dark' ? '#292e33' : '#ffffff';
@@ -200,7 +197,7 @@ function customSearch(selectedText) {
     });
 
     const offBtn = document.createElement('button');
-    offBtn.className = `btn1 selBoxGroup btn-icon1 ${newTheme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
+    offBtn.className = `btn1 selBoxGroup btn-icon1 ${newTheme === 'dark' ? 'btn-dark1' : 'btn-light1'}`;
     offBtn.style.width = '28px';
     offBtn.id = 'off-button';
     const hiddenIcon = `
@@ -214,7 +211,7 @@ function customSearch(selectedText) {
     // console.log("selBoxGroup", selBoxGroup);
     // console.log("selBoxGroup.children", selBoxGroup.children);
     const expandBtn = document.createElement('button');
-    expandBtn.className = `expand-btn ${newTheme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
+    expandBtn.className = `expand-btn ${newTheme === 'dark' ? 'btn-dark1' : 'btn-light1'}`;
     expandBtn.id = 'expand-button';
     expandBtn.style.textAlign = 'center';
     const expandIcon = {
@@ -231,9 +228,6 @@ function customSearch(selectedText) {
     };
     expandBtn.innerHTML = expandIcon[isExpanded ? 'expand' : 'collapse'];
     expandBtn.addEventListener('click', () => {
-      // const newHeight = isExpanded ? 'auto' : `${20 + 2 * padding}px`;
-      // console.log('newHeight', newHeight);
-      // selBoxGroup.style.height = newHeight;
       selBoxElement.outerHTML = "";
       expandBtn.innerHTML = expandIcon[isExpanded ? 'expand' : 'collapse'];
       chrome.storage.local.set({ isExpanded: !isExpanded });
