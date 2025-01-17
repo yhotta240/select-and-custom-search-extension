@@ -480,6 +480,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 情報タブ: 
   // ストアリンクのクリックイベントを設定
+  const extensionLink= document.getElementById('extension_link');
+  extensionLink.href = `chrome://extensions/?id=${chrome.runtime.id}`;
+  if (extensionLink) clickURL(extensionLink);
   const issueLink = document.getElementById('issue-link');
   if (issueLink) clickURL(issueLink);
   const storeLink = document.getElementById('store_link');
