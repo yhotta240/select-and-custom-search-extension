@@ -100,8 +100,8 @@ function customSearch(selectedText) {
   const range = selection.getRangeAt(0);
   const rect = range.getBoundingClientRect();
   // オーバーレイ要素を作成
-  chrome.storage.local.get(['sites', 'selectPosition', 'textDistance', 'theme', 'iconNum', 'searchMode', 'isExpanded'], (data) => {
-    const { sites, selectPosition, textDistance, theme: newTheme, iconNum, searchMode, isExpanded } = data;
+  chrome.storage.local.get(['sites', 'selectPosition', 'textDistance', 'theme', 'iconNum', 'searchMode', 'isExpanded', 'isIconWrap'], (data) => {
+    const { sites, selectPosition, textDistance, theme: newTheme, iconNum, searchMode, isExpanded, isIconWrap } = data;
 
     const selBoxElement = document.createElement('div');
     selBoxElement.className = 'my-extension-root sel-box-element';
@@ -109,26 +109,46 @@ function customSearch(selectedText) {
     const groupPadding = 6;
     const padding = 4;
     const buttonWidth = 20;
-    const maxWidth = iconNum * (buttonWidth + (padding * 2) + gap) - gap + groupPadding * 2;
+    let maxWidth = (iconNum * (buttonWidth + 2 * padding + gap)) - gap + 2 * groupPadding;
     // console.log("maxWidth", maxWidth);
 
     const positions = {
-      'default': { top: `${rect.bottom + window.scrollY + Number(textDistance)}px`, left: `${rect.left + window.scrollX}px`, position: 'absolute' },
-      'top-left': { top: '0px', left: '0px', right: 'auto', bottom: 'auto' },
-      'top-right': { top: '0px', left: 'auto', right: '0px', bottom: 'auto' },
-      'bottom-left': { top: 'auto', left: '0px', right: 'auto', bottom: '0px' },
-      'bottom-right': { top: 'auto', left: 'auto', right: '0px', bottom: '0px' }
+      'default': { top: rect.bottom + window.scrollY + Number(textDistance), left: rect.left + window.scrollX, position: 'absolute' },
+      'top-left': { top: 0, left: 0, right: undefined, bottom: undefined },
+      'top-right': { top: 0, left: undefined, right: 0, bottom: undefined },
+      'bottom-left': { top: undefined, left: 0, right: undefined, bottom: 0 },
+      'bottom-right': { top: undefined, left: undefined, right: 0, bottom: 0 }
     };
 
     const { top, left, right, bottom, position } = positions[selectPosition] || positions['default'];
+    const windowWidth = document.documentElement.clientWidth;
+    let newIconsButton;
+
+    // const isWrapWidth = left + maxWidth > windowWidth;
+    const isWrapWidth = selectPosition === 'default' && left + maxWidth > windowWidth;
+    console.log("isWrapWidth", isWrapWidth);
+    console.log("isIconWrap && isWrapWidth", !isIconWrap && isWrapWidth);
+
+    if (selectPosition === 'default' && isWrapWidth) {
+      const width = windowWidth - left;
+      const iconsWidth = width - 2 * groupPadding;
+      const iconsButton = iconsWidth / (buttonWidth + 2 * padding + gap);
+
+      if (iconNum > iconsButton) {
+        console.log("iconsButton - Math.floor(iconsButton)", iconsButton - Math.floor(iconsButton));
+        newIconsButton = isIconWrap ? Math[iconsButton - Math.floor(iconsButton) >= 0.95 ? 'ceil' : 'floor'](iconsButton) : undefined;
+        maxWidth = isIconWrap ? (newIconsButton * (buttonWidth + 2 * padding + gap)) - gap + 2 * groupPadding : maxWidth;
+        console.log("newIconsButton", newIconsButton);
+      }
+    }
     const backgroundColor = newTheme === 'dark' ? '#292e33' : '#ffffff';
 
     Object.assign(selBoxElement.style, {
       position: position || 'fixed',
-      top: top,
-      left: left,
-      right: right,
-      bottom: bottom,
+      top: top && `${top}px`,
+      left: !isIconWrap && isWrapWidth ? undefined : left && `${left}px`,
+      right: !isIconWrap && isWrapWidth ? '0px' : right && `${right}px`,
+      bottom: bottom && `${bottom}px`,
       pointerEvents: 'absolute',
       maxWidth: `${maxWidth}px`,
       backgroundColor: backgroundColor,
@@ -136,18 +156,18 @@ function customSearch(selectedText) {
 
     const selBoxGroup = document.createElement('div');
     const btnThemeColor = newTheme === 'dark' ? 'btn-dark1' : 'btn-light1';
-
     selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1 ";
-    selBoxGroup.style.height = isExpanded
-      ? `${20 + (padding * 2) + gap + groupPadding}px`
-      : 'auto';
+    selBoxGroup.style.width = isIconWrap ? `auto` : `${maxWidth}px`;
+    selBoxGroup.style.height = isExpanded ? `${20 + (padding * 2) + groupPadding}px` : 'auto';
     selBoxGroup.style.backgroundColor = backgroundColor;
     selBoxGroup.role = "group";
     selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
     selBoxGroup.id = "search-box";
 
+    const threshold = (newIconsButton ?? iconNum) - 1;
     sites.forEach((site, index) => {
-      if (index >= iconNum - 1 && isExpanded) return;
+      // console.log("index", index);
+      if (isExpanded && index >= threshold) return;
       const selBox = document.createElement("a");
       const iconUrl = getFaviconUrl(site.url);
       selBox.href = site.url;
@@ -196,6 +216,7 @@ function customSearch(selectedText) {
     const expandBtn = document.createElement('button');
     expandBtn.className = `expand-btn ${newTheme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
     expandBtn.id = 'expand-button';
+    expandBtn.style.textAlign = 'center';
     const expandIcon = {
       expand: `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-compact-down" viewBox="0 0 16 16">
@@ -210,8 +231,9 @@ function customSearch(selectedText) {
     };
     expandBtn.innerHTML = expandIcon[isExpanded ? 'expand' : 'collapse'];
     expandBtn.addEventListener('click', () => {
-      const newHeight = isExpanded ? 'auto' : `${20 + padding * 2 + gap + groupPadding}px`;
-      selBoxGroup.style.height = newHeight;
+      // const newHeight = isExpanded ? 'auto' : `${20 + 2 * padding}px`;
+      // console.log('newHeight', newHeight);
+      // selBoxGroup.style.height = newHeight;
       selBoxElement.outerHTML = "";
       expandBtn.innerHTML = expandIcon[isExpanded ? 'expand' : 'collapse'];
       chrome.storage.local.set({ isExpanded: !isExpanded });
