@@ -318,10 +318,10 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
         const siteIndex = sites.findIndex(site => site.name === name);
         if (siteIndex === -1) {
           sites.push({ name, url, searchQuery });
-          messageOutput(dateTime(), `${name} を追加しました。`);
+          messageOutput(dateTime(), `${name} を追加しました．`);
         } else {
           sites[siteIndex] = { name, url, searchQuery };
-          messageOutput(dateTime(), `${name} は既に存在します。上書き登録しました。`);
+          messageOutput(dateTime(), `${name} は既に存在します．上書き登録しました．`);
         }
       }
       customSearchPreview();
