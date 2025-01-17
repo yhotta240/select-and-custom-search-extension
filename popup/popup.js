@@ -155,7 +155,7 @@ changeThemeIcon.addEventListener('click', (event) => {
 
 document.addEventListener('click', (event) => {
   const target = event.target;
-  if (target.id === 'expand-button') {
+  if (target.closest('#expand-button')) {
     chrome.storage.local.get(['isExpanded'], (data) => {
       const isExpanded = data.isExpanded ?? false;
       console.log('isExpanded', isExpanded);
@@ -334,6 +334,20 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 
 // DOMの読み込み完了を監視し，完了後に実行
 document.addEventListener('DOMContentLoaded', function () {
+
+  const iconWrap = document.querySelector('#icon-wrap');
+  chrome.storage.local.get(['isIconWrap'], (data) => {
+    const isIconWrap = data.isIconWrap ?? true;
+    iconWrap.checked = isIconWrap;
+    messageOutput(dateTime(), `アイコンの折り返しh：${isIconWrap ? 'ON' : 'OFF'} `);
+  });
+
+  iconWrap.addEventListener('change', (event) => {
+    const isIconWrap = event.target.checked;
+    chrome.storage.local.set({ isIconWrap: isIconWrap }, () => {
+      messageOutput(dateTime(), `アイコンの折り返し：${isIconWrap ? 'ON' : 'OFF'}`);
+    });
+  });
 
   // アイコンの個数を設定
   const iconNumRange = document.querySelector('#icon-num-range');
