@@ -3,17 +3,11 @@
     z-index: 2147483647;
     border-radius: 0.5rem;
     box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 6px;
-    /* background-color: #1d2124; */
     background-color: #ffffff;
     vertical-align: middle;
-    /* max-width: 250px; */
     height: auto;
     display: inline-flex;
     flex-wrap: wrap;
-    /* 折り返し対応 */
-    /* justify-content: flex-start; */
-    /* 左寄せ */
-    /* margin-left: auto; */
 }
 
 .my-extension-root.btn-group1 {
@@ -27,16 +21,14 @@
     display: inline-flex;
     flex-wrap: wrap;
     /* 折り返し対応 */
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
     /* 左寄せ */
     padding: 6px;
     gap: 2px;
 }
 .expand-btn{
-    /* display: inline-flex; */
     vertical-align: middle;
     border: 1px solid transparent;
-    /* border-radius: 0.5rem; */
     line-height: 1.5;
     transition: all 0.2s ease-in-out;
     text-decoration: none;
