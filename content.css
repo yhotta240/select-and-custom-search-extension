@@ -27,6 +27,9 @@
     gap: 2px;
 }
 .expand-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     vertical-align: middle;
     border: 1px solid transparent;
     line-height: 1.5;
