@@ -213,7 +213,6 @@ function customSearch(selectedText) {
     const expandBtn = document.createElement('button');
     expandBtn.className = `expand-btn ${newTheme === 'dark' ? 'btn-dark1' : 'btn-light1'}`;
     expandBtn.id = 'expand-button';
-    expandBtn.style.textAlign = 'center';
     const expandIcon = {
       expand: `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-compact-down" viewBox="0 0 16 16">
