@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "選択＆カスタム検索 - Select & Custom Search",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "選択したテキストを好みのサイトで素早く効率的に検索！あなたの探している情報にすぐアクセスできる便利な拡張機能です．",
   "icons": {
     "48": "icons/icon.png"
