@@ -10,10 +10,24 @@
   <link rel="stylesheet" href="/content.css">
 </head>
 
-<body class="container pb-3 p-2 ">
-  <div class="d-flex  my-2 ">
-    <img src="../icons/icon.png" class="my-auto mx-2" alt="icon" height="28">
-    <h3 class="my-auto fs-3">選択＆カスタム検索</h3>
+<body class="container pb-3 p-2 w-100">
+
+  <div class="d-flex justify-content-between  my-2 align-items-center">
+    <div class="d-flex justify-content-center align-items-center">
+      <img src="../icons/icon.png" class="my-auto mx-2" alt="message clear button" height="28">
+      <h3 class="my-auto fs-3" id="title-header">選択＆カスタム検索</h3>
+    </div>
+
+    <button type="button" class="btn btn-sm btn-light p-1 me-2" id="new-tab-button" aria-label="新しいタブで開く" title="新しいタブで開く">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id = "new-tab-button-icon"
+        class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd"
+          d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5" />
+        <path fill-rule="evenodd"
+          d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z" />
+      </svg>
+    </button>
+
   </div>
 
   <!-- ステータスの表示 -->

@@ -460,7 +460,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
   });
-
+  
+  const newTabButton = document.getElementById('new-tab-button');
+  newTabButton.addEventListener('click', () => {
+    chrome.tabs.create({ url: 'popup/popup.html' });
+  })
 
   // メッセージパネルの表示・非表示を切り替える
   panelButton.addEventListener('click', function () {
