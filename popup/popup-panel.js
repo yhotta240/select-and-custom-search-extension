@@ -27,11 +27,10 @@ closeButton.addEventListener('click', () => {
   togglePanel(false);
   switchMinMaxButtons();
   emdHeight = panel.offsetHeight > panelHeight() - 20 ? 150 : panel.offsetHeight;
-  console.log('emdHeight', panel.offsetHeight, emdHeight);
 });
 
 function togglePanel(isPanelOpen) {
-  console.log('高さ', parseFloat(panel.style.height), panel.offsetHeight, panel.offsetHeight > 50, 'isPanelOpen', isPanelOpen, panelHeight(), 'emdHeight', emdHeight);
+  // console.log('高さ', parseFloat(panel.style.height), panel.offsetHeight, panel.offsetHeight > 50, 'isPanelOpen', isPanelOpen, panelHeight(), 'emdHeight', emdHeight);
   if (!isDragging) {
     panel.style.height = `${isPanelOpen ? `${emdHeight}px` : '0px'}`;
   }
@@ -79,7 +78,7 @@ window.addEventListener('mouseup', () => {
     panel.classList.remove('no-transition');
     resizer.style.backgroundColor = '';
     emdHeight = panel.offsetHeight;
-    console.log('emdHeight', emdHeight);
+    // console.log('emdHeight', emdHeight);
     const panelHeights = panel.offsetHeight;
     if (panelHeights < 50) {
       // panel.style.height = '150px';
