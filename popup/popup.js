@@ -1,8 +1,6 @@
 let isEnabled = false;
 
 const enabledElement = document.getElementById('enabled');
-const panelButton = document.getElementById('panelButton');
-const messagePanel = document.getElementById('messagePanel');
 const messageDiv = document.getElementById('message');
 const manifestData = chrome.runtime.getManifest();
 
@@ -467,21 +465,6 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.tabs.create({ url: 'popup/popup.html' });
   })
 
-  // メッセージパネルの表示・非表示を切り替える
-  panelButton.addEventListener('click', function () {
-    // メッセージパネルの高さを指定（必要に応じて調整可能）
-    const panelHeight = '170px';
-
-    if (messagePanel.style.height === panelHeight) {
-      // パネルが開いている場合は閉じる
-      messagePanel.style.height = '0';
-      panelButton.textContent = 'メッセージパネルを開く';
-    } else {
-      // パネルが閉じている場合は開く
-      messagePanel.style.height = panelHeight;
-      panelButton.textContent = 'メッセージパネルを閉じる';
-    }
-  });
 
   // 情報タブ: 
   // ストアリンクのクリックイベントを設定
@@ -536,7 +519,7 @@ function messageOutput(datetime, message) {
   messageDiv.innerHTML += '<p class="m-0">' + datetime + ' ' + message + '</p>'; // <p> タグで囲んでメッセージを新しい行に追加
 }
 
-document.getElementById('messageClearButton').addEventListener('click', () => {
+document.querySelector("#clear-button").addEventListener('click', () => {
   messageDiv.innerHTML = '<p class="m-0">' + '' + '</p>'; // メッセージ表示エリアを空にする
 });
 
