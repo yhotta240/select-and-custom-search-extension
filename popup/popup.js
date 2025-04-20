@@ -96,6 +96,7 @@ function customSearchPreview() {
       const iconUrl = getFaviconUrl(site.url);
       selBox.href = site.url;
       selBox.id = site.name;
+      selBox.title = site.name;
       selBox.target = "_blank";
       selBox.className = `btn1 btn-icon1 m-auto1 ${theme === 'light' ? 'btn-light1' : 'btn-dark1'}`;
       selBox.innerHTML = `<img src="${iconUrl}" alt="icon" style="width:20px; height:20px;">`;
