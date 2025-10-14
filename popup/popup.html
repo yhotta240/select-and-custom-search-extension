@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="/content.css">
 </head>
 
-<body class="container pb-3 p-2 w-100">
+<body class="container-md pb-3 p-2">
 
   <div class="d-flex justify-content-between  my-2 align-items-center" id="header">
     <div class="d-flex justify-content-center align-items-center">
@@ -18,8 +18,9 @@
       <h3 class="my-auto fs-3" id="title-header">選択＆カスタム検索</h3>
     </div>
 
-    <button type="button" class="btn btn-sm btn-light p-1 me-2" id="new-tab-button" aria-label="新しいタブで開く" title="新しいタブで開く">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id = "new-tab-button-icon"
+    <button type="button" class="btn btn-sm btn-light p-1 me-2" id="new-tab-button" aria-label="新しいタブで開く"
+      title="新しいタブで開く">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="new-tab-button-icon"
         class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
         <path fill-rule="evenodd"
           d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5" />
@@ -44,10 +45,6 @@
       <a class="nav-link active p-1" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab"
         aria-controls="settings " aria-selected="true">設定</a>
     </li>
-    <li class="nav-item" role="presentation">
-      <a class="nav-link p-1" id="description-tab" data-bs-toggle="tab" href="#description" role="tab"
-        aria-controls="description" aria-selected="false">概要</a>
-    </li>
     <li class="nav-item " role="presentation">
       <a class="nav-link p-1" id="document-tab" data-bs-toggle="tab" href="#document" role="tab"
         aria-controls="document" aria-selected="false">ドキュメント</a>
@@ -69,7 +66,7 @@
           <h5>プレビュー表示</h5>
           <div class="d-flex justify-content-end mb-2">
             <!-- テーマチェンジ -->
-            <input class="btn-check " type="checkbox" id="change-theme" >
+            <input class="btn-check " type="checkbox" id="change-theme">
             <label id="change-theme-icon" class="btn btn-outline-dark p-1 btn-sm" for="change-theme" title="テーマチェンジ">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi bi-brightness-high-fill" viewBox="0 0 16 16">
@@ -168,12 +165,16 @@
         <p class="m-1">2. キーワード検索結果のURLを下のフォームに入力してください．</p>
         <form id="urlForm" class="mb-3">
           <label for="searchUrl" class="form-label">検索結果のURL</label>
-          <div class="d-flex text-nowrap">
-            <input type="url" class="form-control me-1 form-control-sm" id="searchUrl"
-              placeholder="例: https://www.google.com/search?q=sample" required>
-            <button id="btn-close" type="button" class="btn-close my-auto me-2 " aria-label="Close"></button>
-            <button type="submit" class="btn btn-primary ">解析する</button>
+          <div class="d-flex align-items-stretch">
+            <div class="d-flex text-nowrap flex-grow-1 position-relative me-2">
+              <input type="url" id="searchUrl" class="form-control form-control-sm h-100"
+                placeholder="例: https://www.google.com/search?q=sample" required>
+              <button type="button" id="btn-close"
+                class="btn-close position-absolute top-50 end-0 translate-middle-y me-2" aria-label="Close"></button>
+            </div>
+            <button type="submit" class="btn btn-primary px-4">解析する</button>
           </div>
+
         </form>
         <div id="resultSection" class="d-none">
           <p><strong>検索形式:</strong> <span id="searchType"></span></p>
@@ -222,7 +223,7 @@
             </label>
           </div>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive ">
           <table id="site-query-list" class="table-nowrap table table-hover table-sm table-bordered">
             <thead>
               <tr>
@@ -251,57 +252,64 @@
       </div>
     </div>
 
-    <!-- 概要 -->
-    <div class="tab-pane fade mt-2 mx-2 " id="description" role="tabpanel" style="margin-bottom: 200px;"
-      aria-labelledby="description-tab">
-      <div class="p-2">
-        <h5>概要</h5>
-        <p class="my-1 fw-bold">説明:</p>
-        <p>
-          このChrome拡張機能を使えば，選択したテキストを任意のサイトで瞬時に検索することができます．気になる単語やフレーズをその場で検索エンジンや特定の情報サイトで調べることができ，手間を大幅に省けます．
-        </p>
-        <p class="my-1 fw-bold">拡張機能の主な特徴:</p>
-        <div class="mt-1">
-          <ol>
-            <li class="mb-2">
-              カスタム検索エンジンの設定
-              <div>
-                自分がよく利用する検索エンジンやサイト（例: Google, Bing, Wikipedia, Amazon, YouTubeなど）を自由に追加できます．
-              </div>
-            </li>
-            <li class="mb-2">
-              選択したテキストを簡単検索
-              <div>
-                テキストをクリックすると，登録された検索先サイトのアイコンがポップアップ表示され，そこからすぐに検索を実行できます．
-              </div>
-            </li>
-            <li class="mb-2">
-              柔軟な検索モード
-              <div>
-                拡張機能の設定画面で，新しいタブ・現在のタブ・シークレットモードのいずれで検索を実行するかを選べます．また，ポップアップ表示の配置もカスタマイズ可能です．
-              </div>
-            </li>
-          </ol>
-        </div>
-        <p class="my-1 fw-bold">注意点:</p>
-        <div class="mt-1">
-          特定サイトの動作について一部のウェブサイトでは，検索クエリの構造が変更される場合があり，正常に検索できないことがあります．
-        </div>
-      </div>
-    </div>
-
     <!-- ドキュメント -->
     <div class="tab-pane fade mt-2 mx-2" id="document" role="tabpanel" style="margin-bottom: 200px;"
       aria-labelledby="document-tab">
-      <div class="accordion" id="accordionExample">
+      <div class="accordion" id="accordion">
+        <!-- 概要 -->
         <div class="accordion-item">
           <h2 class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-              aria-expanded="true" aria-controls="collapseOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#doc-overview"
+              aria-expanded="true" aria-controls="doc-overview">
+              概要
+            </button>
+          </h2>
+          <div id="doc-overview" class="accordion-collapse collapse show" data-bs-parent="#accordion">
+            <div class="accordion-body p-3">
+              <p class="my-1 fw-bold">説明:</p>
+              <p>
+                このChrome拡張機能を使えば，選択したテキストを任意のサイトで瞬時に検索することができます．気になる単語やフレーズをその場で検索エンジンや特定の情報サイトで調べることができ，手間を大幅に省けます．
+              </p>
+              <p class="my-1 fw-bold">拡張機能の主な特徴:</p>
+              <div class="mt-1">
+                <ol>
+                  <li class="mb-2">
+                    カスタム検索エンジンの設定
+                    <div>
+                      自分がよく利用する検索エンジンやサイト（例: Google, Bing, Wikipedia, Amazon, YouTubeなど）を自由に追加できます．
+                    </div>
+                  </li>
+                  <li class="mb-2">
+                    選択したテキストを簡単検索
+                    <div>
+                      テキストをクリックすると，登録された検索先サイトのアイコンがポップアップ表示され，そこからすぐに検索を実行できます．
+                    </div>
+                  </li>
+                  <li class="mb-2">
+                    柔軟な検索モード
+                    <div>
+                      拡張機能の設定画面で，新しいタブ・現在のタブ・シークレットモードのいずれで検索を実行するかを選べます．また，ポップアップ表示の配置もカスタマイズ可能です．
+                    </div>
+                  </li>
+                </ol>
+              </div>
+              <p class="my-1 fw-bold">注意点:</p>
+              <div class="mt-1">
+                特定サイトの動作について一部のウェブサイトでは，検索クエリの構造が変更される場合があり，正常に検索できないことがあります．
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- チュートリアル -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#doc-tutorial" aria-expanded="false" aria-controls="doc-tutorial">
               チュートリアル
             </button>
           </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+          <div id="doc-tutorial" class="accordion-collapse collapse" data-bs-parent="#accordion">
             <div class="accordion-body p-3">
               <p class="mb-1 fw-bold">
                 選択＆カスタム検索 をONにする
@@ -310,7 +318,8 @@
                 <li>拡張機能のポップアップを開き，「選択＆カスタム検索 をONにする」のトグルボタンをクリック
                   <div>無効にする場合も同じ操作を行ってください．</div>
                 </li>
-                <img src="/popup/images/on-off.png" alt="" class="w-100">
+                <img src="/popup/images/on-off.png" class="img-fluid m-auto" style="max-height: 400px;" alt="">
+
               </ul>
               <p class="mb-1 fw-bold">
                 検索サイト登録
@@ -326,8 +335,8 @@
                   検索形式に応じて，検索に使用するパラメータやパスを設定し，サイトを登録します．
                 </li>
               </ol>
-              <div class="w-100 d-flex justify-content-center mb-4"><img src="/popup/images/search-register.png" alt=""
-                  class="w-75 "></div>
+              <img src="/popup/images/search-register.png" alt="" class="img-fluid m-auto ps-5 pb-4"
+                style="max-height: 300px;">
               <p class="mb-1 fw-bold">
                 操作方法
               </p>
@@ -336,8 +345,9 @@
                   任意のテキストを選択します．
                 </li>
                 <li class="mb-1">
-                  「選択＆カスタム検索」をONにした状態でテキストを選択すると，検索アイコンボックスが表示されます．
-                  <img src="/popup/images/search-icon-group.png" alt="" class="w-100 ">
+                  「選択＆カスタム検索」をONにした状態でテキストを選択すると，検索アイコンボックスが表示されます．<br>
+                  <img src="/popup/images/search-icon-group.png" alt="" class="img-fluid my-3"
+                    style="max-height: 200px;">
                 </li>
                 <li class="mb-1">
                   アイコンボックスから検索したいエンジンやサイトのアイコンをクリックすると，そのサイトでの検索結果ページに移動します．
@@ -389,11 +399,12 @@
           <p class="m-0" id="extension-id"></p>
         </li>
         <li class="list-group-item">
-          <p>権限</p>
+          <p class="m-0">権限</p>
+          <p class="m-0" id="permission-info"></p>
         </li>
         <li class="list-group-item">
-          <p>サイトへのアクセス:</p>
-          <p id="permission-info">アクセスしたウェブサイト上にある自分の全データの読み取りと変更をこの拡張機能に許可します．</p>
+          <p class="m-0">サイトへのアクセス:</p>
+          <p class="m-0 py-1">アクセスしたウェブサイト上にある自分の全データの読み取りと変更をこの拡張機能に許可します．</p>
           <span id="site-access">Checking...</span>
         </li>
         </li>
@@ -446,12 +457,12 @@
   </div>
 
   <!-- 固定フッターとしての開閉パネル -->
-  <div class="bg-light position-fixed bottom-0 end-0 border-top w-100 " style="z-index: 2000; ">
+  <div class="bg-light position-fixed bottom-0 end-0 border-top w-100" style="z-index: 2000;">
     <!-- ドラッグしてサイズ変更 -->
-    <div class="w-100 position-relative " id="resizer" style="cursor: n-resize; height: 5px;"></div>
-    <div class=" ">
+    <div class="w-100 position-relative" id="resizer" style="cursor: n-resize; height: 5px;"></div>
+    <div class="">
       <!-- タブメニュー -->
-      <div class="d-flex justify-content-between  mx-1 " id="tab-menu" >
+      <div class="d-flex justify-content-between mx-1" id="tab-menu">
         <ul class="nav nav-underline px-2" id="myTab" role="tablist">
           <li class="nav-item " role="presentation">
             <a class="nav-link active p-0" id="settings-tab" data-bs-toggle="tab" href="#messagePanel" role="tab"
@@ -508,17 +519,15 @@
         </div>
       </div>
       <!-- メッセージ -->
-      <div class="tab-content" id="panel" style="height: 150px;">
+      <div class="tab-content" id="panel">
         <div id="messagePanel" class="bg-light text-dark p-1 overflow-auto tab-pane fade show active h-100"
           role="tabpanel" aria-labelledby="message-tab">
-          <div id="message" class="h-100" style="border: 1px solid #ccc; padding: 10px;">
+          <div id="message" style="border: 1px solid #ccc; padding: 10px; min-height: 100%; box-sizing: border-box;">
           </div>
         </div>
-        <div id="convertPanel" class="bg-light text-dark p-1 overflow-auto tab-pane fade  h-100" role="tabpanel"
+        <div id="convertPanel" class="bg-light text-dark p-1 overflow-auto tab-pane fade h-100" role="tabpanel"
           aria-labelledby="convert-tab">
-          <div id="convert" class="h-100" style="border: 1px solid #ccc; padding: 10px;">
-
-          </div>
+          <div id="convert" class="h-100" style="border: 1px solid #ccc; padding: 10px;"></div>
         </div>
         <div id="infoPanel" class="bg-light text-dark p-1 overflow-auto tab-pane fade h-100" role="tabpanel"
           aria-labelledby="info-tab">

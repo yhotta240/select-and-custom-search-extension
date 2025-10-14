@@ -1,12 +1,26 @@
 html {
   font-size: 0.8rem;
+  width: 30rem;
 }
 
-body {
-  width: 30rem;
-  max-width: 30rem;
-  min-width: 30rem;
-  margin: 0;
+@media (min-width: 30rem) {
+  html {
+    width: auto !important;
+  }
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 0.95rem;
+  }
+
+  .container-md {
+    max-width: 720px !important;
+  }
+
+  .table-responsive {
+    overflow-x: visible !important;
+  }
 }
 
 #panel {
@@ -14,6 +28,17 @@ body {
   overflow: hidden;
   transition: height 0.3s ease;
 }
+
 #panel.no-transition {
   transition: none !important;
+}
+
+.relative {
+  position: relative;
+}
+
+.relative #btn-close {
+  position: absolute;
+  right: 0.5rem;
+  z-index: 1000;
 }

@@ -7,7 +7,7 @@ const panelButton = document.querySelector("#panel-button");
 const resizer = document.getElementById('resizer');
 const panel = document.getElementById('panel');
 const panelHeight = () => {
-  return document.documentElement.clientHeight - (header.offsetTop + header.offsetHeight) - tabMenu.offsetHeight - resizer.offsetHeight;
+  return document.documentElement.clientHeight - tabMenu.offsetHeight - resizer.offsetHeight;
 };
 let startY = 0;
 let tmpPanelHeight = 0;
