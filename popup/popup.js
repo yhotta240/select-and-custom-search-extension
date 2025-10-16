@@ -166,6 +166,11 @@ document.addEventListener('click', (event) => {
 });
 
 function listSites() {
+  const sortableIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+    </svg>
+  `;
   const deleteIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
       <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
@@ -176,11 +181,14 @@ function listSites() {
     // console.log("sites", sites);
     // const siteQueryList = document.getElementById('site-query-list');
     const siteQueryListBody = document.getElementById('site-query-list-body');
-    siteQueryListBody.innerHTML = ``;
+    siteQueryListBody.innerHTML = ''; // 一旦クリア
     sites.forEach((site, index) => {
       const iconUrl = getFaviconUrl(site.url);
       const row = document.createElement('tr');
       row.innerHTML = `
+        <td class="text-center sortable-list-td bg-outline-secondary d-none" style="cursor: grab;">
+          ${sortableIcon}
+        </td>
         <td class="text-center delete-list-td d-none" >
           <button class='btn btn-sm p-0 btn-outline-secondary delete-list-btn'  >
             ${deleteIcon}
@@ -195,11 +203,53 @@ function listSites() {
         <td class='text-nowrap d-none'>${site.inputForm}</td>
         <td class='text-nowrap d-none'>${site.inputButton}</td>
       `;
-      siteQueryListBody.innerHTML += row.outerHTML;
+      siteQueryListBody.appendChild(row); // 1行ずつ追加
     });
+
+    const siteQueryListTable = document.getElementById('site-query-list');
+    const sortableButton = document.querySelector('#sortable-btn-outlined');
+
+    // SortableJSでドラッグアンドドロップを有効化
+    const sortable = new Sortable(siteQueryListBody, {
+      handle: '.sortable-list-td',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      disabled: !sortableButton.checked,
+      onEnd: function (evt) {
+        // ドラッグ操作が完了したとき
+        chrome.storage.local.get(['sites'], (data) => {
+          let sites = data.sites ?? [];
+
+          const [movedItem] = sites.splice(evt.oldIndex, 1);
+          sites.splice(evt.newIndex, 0, movedItem);
+
+          chrome.storage.local.set({ sites: sites }, () => {
+            customSearchPreview();
+          });
+        });
+      }
+    });
+    // 並び替えボタンの表示制御
+    function toggleSortableState(checked) {
+      document.querySelectorAll('.sortable-list-td').forEach((element) => {
+        element.classList.toggle('d-none', !checked);
+      });
+      // SortableJSの有効/無効を切り替え
+      sortable.option('disabled', !checked);
+      siteQueryListTable.classList.toggle('sorting-enabled', checked);
+      alertInfo(checked, '並び替え: ドラッグで登録サイトリストの順番を入れ替えると，「検索先ボックス」の表示順序も同期して更新されます．');
+    }
+
+    // 初期状態を適用
+    toggleSortableState(sortableButton.checked);
+    sortableButton.addEventListener("change", (e) => {
+      toggleSortableState(e.target.checked);
+    });
+
+    // 削除ボタンの表示制御
     const deleteButton = document.querySelector('#delete-btn-outlined');
     function toggleDeleteVisibility(checked) {
-      document.querySelectorAll('.delete-list-th, .delete-list-td').forEach((element) => {
+      document.querySelectorAll('.delete-list-td').forEach((element) => {
         element.classList.toggle('d-none', !checked);
       });
     };
@@ -483,7 +533,6 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('extension-version').textContent = `${manifestData.version}`;
   document.getElementById('extension-description').textContent = `${manifestData.description}`;
   chrome.permissions.getAll((result) => {
-    console.log(result);
     document.getElementById('permission-info').textContent = `${result.permissions.join(', ')}`;
 
     let siteAccess;
@@ -543,4 +592,11 @@ function dateTime() {
 
 function getFaviconUrl(domain) {
   return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+}
+
+// ヘルプ情報表示
+function alertInfo(checked, message) {
+  const alertInfo = document.getElementById('alert-info');
+  alertInfo.classList.toggle('d-none', !checked);
+  document.getElementById('alert-info-text').textContent = message;
 }

@@ -11,7 +11,7 @@ html {
 
 @media (min-width: 768px) {
   html {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .container-md {
@@ -41,4 +41,15 @@ html {
   position: absolute;
   right: 0.5rem;
   z-index: 1000;
+}
+
+/* 並び替えが有効な時にテキスト選択を無効にする */
+#site-query-list.sorting-enabled td {
+  user-select: none;
+}
+
+/* ドラッグ中の行のスタイル */
+.sortable-ghost {
+  opacity: 0.4;
+  background-color: #c8ebfb;
 }
