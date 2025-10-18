@@ -379,6 +379,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
   const resultSection = document.getElementById("resultSection");
+  const registerButton = document.getElementById("registerButton")
   const searchType = document.getElementById("searchType");
   const paramSection = document.getElementById("paramSection");
   const paramSelect = document.getElementById("paramSelect");
@@ -386,11 +387,29 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
   const searchTemplate = document.getElementById("searchTemplate");
   const selectLabel = document.getElementById('select-label');
   // Reset UI
+  const overwriteSection = document.getElementById("overwrite-confirm-section");
+  const overwriteCheckbox = document.getElementById("overwrite-confirm-checkbox");
+  overwriteSection.classList.add("d-none");
+  overwriteCheckbox.checked = false;
   paramSelect.innerHTML = "";
   templateSection.classList.add("d-none");
 
   const urlInput = searchUrl.value;
   const url = new URL(urlInput);
+
+  // サイトが既に存在するかどうかを解析時に判定
+  chrome.storage.local.get(['sites'], (data) => {
+    const sites = data.sites ?? [];
+    const name = url.hostname;
+    const siteIndex = sites.findIndex(site => site.name === name);
+
+    if (siteIndex !== -1) {
+      const overwriteConfirmSection = document.getElementById("overwrite-confirm-section");
+      const overwriteConfirmLabel = document.getElementById("overwrite-confirm-label");
+      overwriteConfirmLabel.textContent = `${name} は既に存在します．上書き保存する場合はチェックを入れてください．最新に追加された同名サイト（登録サイトリストの下の方）が上書き対象となります．`;
+      overwriteConfirmSection.classList.remove("d-none");
+    }
+  });
 
   // Detect search type
   const params = url.searchParams;
@@ -440,55 +459,73 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
     }
   }
 
-
   resultSection.classList.remove("d-none");
+  registerButton.classList.remove("d-none");
+
   // Register button click
-  document.getElementById("registerButton").onclick = function () {
+  registerButton.addEventListener("click", function () {
+    const name = url.hostname;
+    let template, basePath, searchQuery;
+
+    if (searchType.textContent === "クエリパラメータ検索") {
+      const selectedParam = paramSelect.value;
+      template = `${url.origin}${url.pathname}?${selectedParam}={query}`;
+      searchQuery = `${url.pathname}?${selectedParam}=`;
+    } else if (searchType.textContent === "フラグメント型検索") {
+      const selectedKeyword = paramSelect.value;
+      basePath = url.hash.split(selectedKeyword)[0];
+      template = `${url.origin}/${basePath}{keyword}`;
+      searchQuery = `/${basePath}`;
+    } else if (searchType.textContent === "パス型検索") {
+      const selectedKeyword = encodeURIComponent(paramSelect.value);
+      basePath = url.pathname.split(selectedKeyword)[0];
+      template = `${url.origin}${basePath}{keyword}`;
+      searchQuery = basePath;
+    } else {
+      template = "カスタム入力が必要";
+    }
+
+    searchTemplate.textContent = template;
+    templateSection.classList.remove("d-none");
+
     chrome.storage.local.get(['sites'], (data) => {
-      // console.log("data.sites", data.sites);
       let sites = data.sites ?? [];
-      const name = url.hostname;
-      let template, basePath, searchQuery;
-
-      if (searchType.textContent === "クエリパラメータ検索") {
-        const selectedParam = paramSelect.value;
-        template = `${url.origin}${url.pathname}?${selectedParam}={query}`;
-        searchQuery = `${url.pathname}?${selectedParam}=`;
-      } else if (searchType.textContent === "フラグメント型検索") {
-        const selectedKeyword = paramSelect.value;
-        basePath = url.hash.split(selectedKeyword)[0];
-        template = `${url.origin}/${basePath}{keyword}`;
-        searchQuery = `/${basePath}`;
-      } else if (searchType.textContent === "パス型検索") {
-        const selectedKeyword = paramSelect.value;
-        basePath = url.pathname.split(selectedKeyword)[0];
-        template = `${url.origin}${basePath}{keyword}`;
-        searchQuery = basePath;
-      } else {
-        template = "カスタム入力が必要";
-      }
-
-      searchTemplate.textContent = template;
-      templateSection.classList.remove("d-none");
-
-      addSite(name, url.origin, searchQuery);
-
-      chrome.storage.local.set({ sites: sites }, () => { });
-
-      function addSite(name, url, searchQuery) {
-        const siteIndex = sites.findIndex(site => site.name === name);
-        if (siteIndex === -1) {
-          sites.push({ name, url, searchQuery });
-          messageOutput(dateTime(), `${name} を追加しました．`);
-        } else {
-          sites[siteIndex] = { name, url, searchQuery };
-          messageOutput(dateTime(), `${name} は既に存在します．上書き登録しました．`);
+      // 最新の同名サイトの index を取得（末尾優先）
+      let siteIndex = -1;
+      for (let i = sites.length - 1; i >= 0; i--) {
+        if (sites[i].name === name) {
+          siteIndex = i;
+          break;
         }
       }
-      customSearchPreview();
-      listSites();
+
+      const overwriteConfirmCheckbox = document.getElementById("overwrite-confirm-checkbox");
+
+      if (siteIndex !== -1) {
+        // サイトが既に存在する場合
+        const shouldOverwrite = overwriteConfirmCheckbox.checked;
+        if (shouldOverwrite) {
+          sites[siteIndex] = { name, url: url.origin, searchQuery };
+          messageOutput(dateTime(), `${name} は既に存在します．上書き登録しました．`);
+        } else {
+          // 新規追加（重複）
+          sites.push({ name, url: url.origin, searchQuery });
+          messageOutput(dateTime(), `${name} を追加しました．（重複）`);
+        }
+      } else {
+        // サイトが存在しない場合は通常追加
+        sites.push({ name, url: url.origin, searchQuery });
+        messageOutput(dateTime(), `${name} を追加しました．`);
+      }
+
+      chrome.storage.local.set({ sites }, () => {
+        customSearchPreview();
+        listSites();
+        registerButton.classList.add("d-none"); // 登録後に非表示
+      });
     });
-  };
+
+  });
 });
 
 
