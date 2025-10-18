@@ -363,11 +363,20 @@ deleteButton.addEventListener("change", (e) => {
 });
 // --- 削除ボタンの表示制御 ここまで---
 
+// 検索結果のURL
+const searchUrl = document.getElementById("searchUrl");
+function searchUrlInput(e) {
+  const text = e.target.value;
+  searchUrl.type = "text";
+  searchUrl.value = decodeURIComponent(text);
+  setTimeout(() => searchUrl.type = "url", 0);
+}
+searchUrl.addEventListener("change", searchUrlInput);
+searchUrl.addEventListener("input", searchUrlInput);
+
+// 検索サイト登録
 document.getElementById("urlForm").addEventListener("submit", function (e) {
   e.preventDefault();
-
-  const urlInput = document.getElementById("searchUrl").value;
-  const url = new URL(urlInput);
 
   const resultSection = document.getElementById("resultSection");
   const searchType = document.getElementById("searchType");
@@ -376,10 +385,12 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
   const templateSection = document.getElementById("templateSection");
   const searchTemplate = document.getElementById("searchTemplate");
   const selectLabel = document.getElementById('select-label');
-
   // Reset UI
   paramSelect.innerHTML = "";
   templateSection.classList.add("d-none");
+
+  const urlInput = searchUrl.value;
+  const url = new URL(urlInput);
 
   // Detect search type
   const params = url.searchParams;
@@ -390,7 +401,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
     for (const [key, value] of params) {
       const option = document.createElement("option");
       option.value = key;
-      option.textContent = `${key}=${value}`;
+      option.textContent = `${key}=${decodeURIComponent(value)}`;
       paramSelect.appendChild(option);
     }
 
@@ -405,7 +416,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
       hashParts.forEach((part, index) => {
         const option = document.createElement("option");
         option.value = index === 0 ? `#${part}` : part; // Keep the first part with the hash symbol
-        option.textContent = part;
+        option.textContent = decodeURIComponent(part);
         paramSelect.appendChild(option);
       });
 
@@ -418,6 +429,7 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
     const pathParts = url.pathname.split("/").filter((part) => part !== "");
     if (pathParts.length > 0) {
       pathParts.forEach((part) => {
+        part = decodeURIComponent(part);
         const option = document.createElement("option");
         option.value = part;
         option.textContent = part;
@@ -426,7 +438,6 @@ document.getElementById("urlForm").addEventListener("submit", function (e) {
 
       paramSection.classList.remove("d-none");
     }
-
   }
 
 
