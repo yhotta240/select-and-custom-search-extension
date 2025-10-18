@@ -642,21 +642,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // リストの削除ボタン
-  document.addEventListener("click", function (e) {
+  const siteQueryListBody = document.getElementById('site-query-list-body');
+  siteQueryListBody.addEventListener("click", (e) => {
     if (e.target.closest(".delete-list-btn")) {
-      const row = e.target.closest("tr");
-      if (row) {
-        const siteName = row.querySelector("td:nth-child(4)").textContent.trim(); // サイト名を取得
-        // row.remove(); // 行を削除
-        chrome.storage.local.get(["sites"], (data) => {
-          const sites = data.sites ?? [];
-          const updatedSites = sites.filter((site) => site.name !== siteName);
-          chrome.storage.local.set({ sites: updatedSites }, () => {
-            customSearchPreview();
-          });
-        });
-      }
-
+      const buttons = siteQueryListBody.querySelectorAll('.delete-list-btn');
+      const deleteIndex = Array.from(buttons).indexOf(e.target.closest(".delete-list-btn"));
+      chrome.storage.local.get(["sites"], (data) => {
+        const sites = data.sites ?? [];
+        const updatedSites = sites.filter((site, index) => index !== deleteIndex);
+        chrome.storage.local.set({ sites: updatedSites }, customSearchPreview);
+      });
     }
   });
 
