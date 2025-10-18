@@ -142,6 +142,10 @@ function customSearchPreview() {
 }
 customSearchPreview();
 
+const sortableButton = document.querySelector('#sortable-btn-outlined');
+const editButton = document.querySelector('#edit-btn-outlined');
+const deleteButton = document.querySelector('#delete-btn-outlined');
+
 const changeThemeIcon = document.querySelector('#change-theme-icon');
 changeThemeIcon.addEventListener('click', (event) => {
   chrome.storage.local.get(['theme'], (data) => {
@@ -165,6 +169,9 @@ document.addEventListener('click', (event) => {
   }
 });
 
+let sortableInstance = null;
+
+
 function listSites() {
   const sortableIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
@@ -178,8 +185,6 @@ function listSites() {
   `;
   chrome.storage.local.get(['sites'], (data) => {
     const sites = data.sites ?? [];
-    // console.log("sites", sites);
-    // const siteQueryList = document.getElementById('site-query-list');
     const siteQueryListBody = document.getElementById('site-query-list-body');
     siteQueryListBody.innerHTML = ''; // 一旦クリア
     sites.forEach((site, index) => {
@@ -206,61 +211,157 @@ function listSites() {
       siteQueryListBody.appendChild(row); // 1行ずつ追加
     });
 
-    const siteQueryListTable = document.getElementById('site-query-list');
-    const sortableButton = document.querySelector('#sortable-btn-outlined');
-
-    // SortableJSでドラッグアンドドロップを有効化
-    const sortable = new Sortable(siteQueryListBody, {
+    // --- 並び替えボタンの表示制御 ここから ---
+    if (sortableInstance) {
+      sortableInstance.destroy();
+    }
+    sortableInstance = new Sortable(siteQueryListBody, {
       handle: '.sortable-list-td',
       animation: 150,
       ghostClass: 'sortable-ghost',
       disabled: !sortableButton.checked,
       onEnd: function (evt) {
         // ドラッグ操作が完了したとき
-        chrome.storage.local.get(['sites'], (data) => {
-          let sites = data.sites ?? [];
+        const [movedItem] = sites.splice(evt.oldIndex, 1);
+        sites.splice(evt.newIndex, 0, movedItem);
 
-          const [movedItem] = sites.splice(evt.oldIndex, 1);
-          sites.splice(evt.newIndex, 0, movedItem);
-
-          chrome.storage.local.set({ sites: sites }, () => {
-            customSearchPreview();
-          });
+        chrome.storage.local.set({ sites: sites }, () => {
+          customSearchPreview();
         });
       }
     });
-    // 並び替えボタンの表示制御
-    function toggleSortableState(checked) {
-      document.querySelectorAll('.sortable-list-td').forEach((element) => {
-        element.classList.toggle('d-none', !checked);
-      });
-      // SortableJSの有効/無効を切り替え
-      sortable.option('disabled', !checked);
-      siteQueryListTable.classList.toggle('sorting-enabled', checked);
-      alertInfo(checked, '並び替え: ドラッグで登録サイトリストの順番を入れ替えると，「検索先ボックス」の表示順序も同期して更新されます．');
-    }
 
-    // 初期状態を適用
     toggleSortableState(sortableButton.checked);
-    sortableButton.addEventListener("change", (e) => {
-      toggleSortableState(e.target.checked);
-    });
-
-    // 削除ボタンの表示制御
-    const deleteButton = document.querySelector('#delete-btn-outlined');
-    function toggleDeleteVisibility(checked) {
-      document.querySelectorAll('.delete-list-td').forEach((element) => {
-        element.classList.toggle('d-none', !checked);
-      });
-    };
+    toggleEditMode(editButton.checked, false); // Don't save on initial load
     toggleDeleteVisibility(deleteButton.checked);
-    deleteButton.addEventListener("change", (e) => {
-      toggleDeleteVisibility(e.target.checked);
-    });
   });
 }
 
+// --- 並び替えボタンの表示制御 ここから ---
+const siteQueryListTable = document.getElementById('site-query-list');
 
+function toggleSortableState(checked) {
+  document.querySelectorAll('.sortable-list-td').forEach((element) => {
+    element.classList.toggle('d-none', !checked);
+  });
+  if (sortableInstance) {
+    sortableInstance.option('disabled', !checked);
+  }
+  siteQueryListTable.classList.toggle('sorting-enabled', checked);
+}
+
+sortableButton.addEventListener("change", (e) => {
+  const isChecked = e.target.checked;
+  alertInfo(isChecked, '並び替え: ドラッグで登録サイトリストの順番を入れ替えると，「検索先ボックス」の表示順序も同期して更新されます．');
+  toggleSortableState(isChecked);
+
+  if (isChecked) {
+    editButton.checked = false;
+    toggleEditMode(false, false);
+    deleteButton.checked = false;
+    toggleDeleteVisibility(false);
+  }
+});
+// --- 並び替えボタンの表示制御 ここまで ---
+
+
+// --- 編集ボタンの表示制御 ここから ---
+function toggleEditMode(isEditing, shouldSave) {
+  const siteQueryListBody = document.getElementById('site-query-list-body');
+  const rows = siteQueryListBody.querySelectorAll('tr');
+
+  if (isEditing) {
+    editRows(rows);
+  } else {
+    if (shouldSave && siteQueryListBody.querySelector('input[type="text"]')) {
+      chrome.storage.local.get(['sites'], (data) => {
+        const sites = data.sites ?? [];
+        rows.forEach((row, index) => {
+          if (sites[index]) {
+            const nameInput = row.cells[3].querySelector('input');
+            const urlInput = row.cells[4].querySelector('input');
+            const queryInput = row.cells[5].querySelector('input');
+
+            if (nameInput && urlInput && queryInput) {
+              sites[index].name = nameInput.value;
+              sites[index].url = urlInput.value;
+              sites[index].searchQuery = queryInput.value;
+            }
+          }
+        });
+
+        chrome.storage.local.set({ sites: sites }, () => {
+          messageOutput(dateTime(), '登録サイトリストを更新しました．');
+          customSearchPreview(); // 検索ボックスを更新
+        });
+      });
+    } else {
+      // 編集モードから戻す
+      exitEditRows(rows);
+    }
+  }
+}
+
+editButton.addEventListener("change", (e) => {
+  const isChecked = e.target.checked;
+  alertInfo(isChecked, '編集: 各項目を編集し，再度「編集」ボタンを押すと変更が保存されます．');
+  toggleEditMode(isChecked, true);
+
+  if (isChecked) {
+    sortableButton.checked = false;
+    toggleSortableState(false);
+    deleteButton.checked = false;
+    toggleDeleteVisibility(false);
+  }
+});
+
+// 行を編集モードに切り替え
+function editRows(rows) {
+  rows.forEach(row => {
+    // hostname, url, searchQuery
+    for (let i = 3; i <= 5; i++) {
+      const cell = row.cells[i];
+      const originalText = cell.textContent;
+      cell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${originalText}">`;
+    }
+  });
+}
+
+// 行を編集モードから戻す
+function exitEditRows(rows) {
+  rows.forEach(row => {
+    // hostname, url, searchQuery
+    for (let i = 3; i <= 5; i++) {
+      const cell = row.cells[i];
+      const input = cell.querySelector('input');
+      if (input) {
+        cell.innerHTML = input.value;
+      }
+    }
+  });
+}
+// --- 編集ボタンの表示制御 ここまで---
+
+// --- 削除ボタンの表示制御 ここから---
+function toggleDeleteVisibility(checked) {
+  document.querySelectorAll('.delete-list-td').forEach((element) => {
+    element.classList.toggle('d-none', !checked);
+  });
+};
+
+deleteButton.addEventListener("change", (e) => {
+  const isChecked = e.target.checked;
+  alertInfo(isChecked, '削除: ゴミ箱アイコンをクリックすると，そのサイトがリストから削除されます．');
+  toggleDeleteVisibility(isChecked);
+
+  if (isChecked) {
+    editButton.checked = false;
+    toggleEditMode(false, false);
+    sortableButton.checked = false;
+    toggleSortableState(false);
+  }
+});
+// --- 削除ボタンの表示制御 ここまで---
 
 document.getElementById("urlForm").addEventListener("submit", function (e) {
   e.preventDefault();
@@ -497,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.target.closest(".delete-list-btn")) {
       const row = e.target.closest("tr");
       if (row) {
-        const siteName = row.querySelector("td:nth-child(3)").textContent.trim(); // サイト名を取得
+        const siteName = row.querySelector("td:nth-child(4)").textContent.trim(); // サイト名を取得
         // row.remove(); // 行を削除
         chrome.storage.local.get(["sites"], (data) => {
           const sites = data.sites ?? [];
@@ -556,7 +657,6 @@ document.addEventListener('DOMContentLoaded', function () {
   if (githubLink) clickURL(githubLink);
 
 });
-
 
 function clickURL(link) {
   const url = link.href ? link.href : link;
