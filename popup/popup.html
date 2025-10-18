@@ -42,7 +42,7 @@
   <!-- メニュータブ -->
   <ul class="nav nav-underline mb-2 mx-1" id="myTab" role="tablist">
     <li class="nav-item " role="presentation">
-      <a class="nav-link active p-1" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab"
+      <a class="nav-link p-1 active" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab"
         aria-controls="settings " aria-selected="true">設定</a>
     </li>
     <li class="nav-item " role="presentation">
@@ -50,7 +50,11 @@
         aria-controls="document" aria-selected="false">ドキュメント</a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link  p-1" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info"
+      <a class="nav-link p-1" id="version-tab" data-bs-toggle="tab" href="#version" role="tab" aria-controls="version"
+        aria-selected="false" tabindex="-1">バージョン</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link p-1" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info"
         aria-selected="false">情報</a>
     </li>
   </ul>
@@ -394,6 +398,66 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- バージョン -->
+    <div class="tab-pane fade mt-2 mx-2" id="version" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="version-tab">
+      <ul class="list-group list-group-flush">
+        <h5 class="pt-3 ps-2 mb-2">更新履歴</h5>
+        <li class="list-group-item">
+          <strong>v1.4.0</strong>
+          <ul class="small mt-1">
+            <li>登録サイトリストの編集・削除機能の改善</li>
+            <li>サイトの上書き登録，日本語キーワードに対応</li>
+            <li>URL入力フォームの改善</li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <strong>v1.3.0</strong>
+          <ul class="small mt-1">
+            <li>ポップアップのUI/UX改善</li>
+            <li>登録サイトリストの並び替え機能を追加</li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <strong>v1.2.0 - v1.2.1</strong>
+          <ul class="small mt-1">
+            <li>テーマ変更，リスト表示ボタンにツールチップを追加</li>
+            <li>フッターにメッセージパネルとリサイズ機能を追加</li>
+            <li>サイト名をツールチップで表示</li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <strong>v1.1.0 - v1.1.1</strong>
+          <ul class="small mt-1">
+            <li>ポップアップの幅に関するスタイルを修正</li>
+            <li>OFFボタンにツールチップを追加</li>
+            <li>新しいタブで開くボタンを追加</li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <strong>v1.0.1 - v1.0.8</strong>
+          <ul class="small mt-1">
+            <li>ストアページへのリンクなどを追加</li>
+            <li>アイコンの折り返しオプションを追加</li>
+            <li>選択したテキストからの距離を保存する機能を追加</li>
+            <li>検索モードと配置のUIを改善</li>
+            <li>検索サイトのリストをデフォルト設定として管理するように変更</li>
+            <li>検索モード（新しいウィンドウ，シークレットウィンドウ）を追加</li>
+            <li>検索アイコンの表示位置からの距離を設定する機能を追加</li>
+            <li>テーマ変更機能を追加</li>
+            <li>プレビューでアイコンの配置や個数を変更する機能を追加</li>
+            <li>YouTubeの検索に対応</li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <strong>v1.0.0</strong>
+          <ul class="small mt-1">
+            <li>初回リリース</li>
+          </ul>
+        </li>
+      </ul>
     </div>
 
     <!-- 詳細情報 -->
