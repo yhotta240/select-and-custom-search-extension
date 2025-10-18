@@ -53,3 +53,12 @@ html {
   opacity: 0.4;
   background-color: #c8ebfb;
 }
+
+/* isVisible: false の時のアイコンのスタイル */
+.icon-is-hidden {
+  border-color: white;
+}
+
+.icon-is-hidden svg {
+  color: white;
+}

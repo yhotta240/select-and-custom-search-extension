@@ -163,8 +163,12 @@ function customSearch(selectedText) {
 
     const threshold = (newIconsButton ?? iconNum) - 1;
     sites.forEach((site, index) => {
-      // console.log("index", index);
       if (isExpanded && index >= threshold) return;
+
+      // サイトが非表示設定の場合はスキップする
+      const isVisible = site.isVisible !== false;
+      if (!isVisible) return;
+
       const selBox = document.createElement("a");
       const iconUrl = getFaviconUrl(site.url);
       selBox.href = site.url;

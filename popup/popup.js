@@ -21,20 +21,20 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
 
 
 const defaultSites = [
-  { name: "google.com", url: "https://google.com", searchQuery: "/search?q=" },
-  { name: "www.youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=" },
-  { name: "x.com", url: "https://x.com", searchQuery: "/search?q=" },
-  { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=" },
-  { name: "search.rakuten.co.jp", url: "https://search.rakuten.co.jp", searchQuery: "/search/mall/" },
-  { name: "chatgpt.com", url: "https://chatgpt.com", searchQuery: "/search?q=", },
-  { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "/search/new?q=" },
-  { name: "open.spotify.com", url: "https://open.spotify.com", searchQuery: "/search/" },
-  { name: "www.pixiv.net", url: "https://www.pixiv.net", searchQuery: "/search?q=" },
-  { name: "github.com", url: "https://github.com", searchQuery: "/search?q=" },
-  { name: "www.deepl.com", url: "https://www.deepl.com", searchQuery: "/#en/ja/" },
-  { name: "ja.wikipedia.org", url: "https://ja.wikipedia.org", searchQuery: "/wiki/" },
-  { name: "store.steampowered.com", url: "https://store.steampowered.com", searchQuery: "/search/?term=" },
-  { name: "www.cmoa.jp", url: "https://www.cmoa.jp", searchQuery: "/search/result/?header_word=" },
+  { name: "google.com", url: "https://google.com", searchQuery: "/search?q=", isVisible: true },
+  { name: "www.youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=", isVisible: true },
+  { name: "x.com", url: "https://x.com", searchQuery: "/search?q=", isVisible: true },
+  { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=", isVisible: true },
+  { name: "search.rakuten.co.jp", url: "https://search.rakuten.co.jp", searchQuery: "/search/mall/", isVisible: true },
+  { name: "chatgpt.com", url: "https://chatgpt.com", searchQuery: "/search?q=", isVisible: true },
+  { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "/search/new?q=", isVisible: true },
+  { name: "open.spotify.com", url: "https://open.spotify.com", searchQuery: "/search/", isVisible: true },
+  { name: "www.pixiv.net", url: "https://www.pixiv.net", searchQuery: "/search?q=", isVisible: true },
+  { name: "github.com", url: "https://github.com", searchQuery: "/search?q=", isVisible: true },
+  { name: "www.deepl.com", url: "https://www.deepl.com", searchQuery: "/#en/ja/", isVisible: true },
+  { name: "ja.wikipedia.org", url: "https://ja.wikipedia.org", searchQuery: "/wiki/", isVisible: true },
+  { name: "store.steampowered.com", url: "https://store.steampowered.com", searchQuery: "/search/?term=", isVisible: true },
+  { name: "www.cmoa.jp", url: "https://www.cmoa.jp", searchQuery: "/search/result/?header_word=", isVisible: true },
   // { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
 ];
 
@@ -92,6 +92,11 @@ function customSearchPreview() {
     chrome.storage.local.set({ sites: sites });
     sites.forEach((site, index) => {
       if (index >= iconNum - 1 && isExpanded) return;
+
+      // サイトが非表示設定の場合はスキップする
+      const isVisible = site.isVisible !== false;
+      if (!isVisible) return;
+
       const selBox = document.createElement("a");
       const iconUrl = getFaviconUrl(site.url);
       selBox.href = site.url;
@@ -144,6 +149,7 @@ customSearchPreview();
 
 const sortableButton = document.querySelector('#sortable-btn-outlined');
 const editButton = document.querySelector('#edit-btn-outlined');
+const visibleButton = document.querySelector('#visible-btn-outlined');
 const deleteButton = document.querySelector('#delete-btn-outlined');
 
 const changeThemeIcon = document.querySelector('#change-theme-icon');
@@ -178,6 +184,18 @@ function listSites() {
       <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
     </svg>
   `;
+  const visibleIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+    </svg>
+  `;
+  const hiddenIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+      <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588M5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/>
+      <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+    </svg>
+  `;
   const deleteIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
       <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
@@ -189,17 +207,21 @@ function listSites() {
     siteQueryListBody.innerHTML = ''; // 一旦クリア
     sites.forEach((site, index) => {
       const iconUrl = getFaviconUrl(site.url);
+      const isVisible = site.isVisible !== false; // undefined or true is visible
       const row = document.createElement('tr');
       row.innerHTML = `
         <td class="text-center sortable-list-td bg-outline-secondary d-none" style="cursor: grab;">
           ${sortableIcon}
         </td>
-        <td class="text-center delete-list-td d-none" >
-          <button class='btn btn-sm p-0 btn-outline-secondary delete-list-btn'  >
+        <td class="text-center action-list-td d-none" >
+          <button class='btn btn-sm p-0 btn-outline-secondary visible-list-btn d-none ${!isVisible ? "icon-is-hidden" : ""}' data-index="${index}">
+            ${isVisible ? visibleIcon : hiddenIcon}
+          </button>
+          <button class='btn btn-sm p-0 btn-outline-secondary delete-list-btn d-none ${!isVisible ? "icon-is-hidden" : ""}'  >
             ${deleteIcon}
           </button>
         </td>
-        <td class="text-center ">
+        <td class="text-center">
           <img src="${iconUrl}" alt="アイコン" style="width:15px; height:15px;">
         </td>
         <td class='text-nowrap'>${site.name}</td>
@@ -208,6 +230,10 @@ function listSites() {
         <td class='text-nowrap d-none'>${site.inputForm}</td>
         <td class='text-nowrap d-none'>${site.inputButton}</td>
       `;
+      if (!isVisible) {
+        // isVisibleがfalseの場合、行をグレーアウトする
+        row.querySelectorAll('td').forEach(td => td.classList.add('bg-secondary'));
+      }
       siteQueryListBody.appendChild(row); // 1行ずつ追加
     });
 
@@ -225,14 +251,13 @@ function listSites() {
         const [movedItem] = sites.splice(evt.oldIndex, 1);
         sites.splice(evt.newIndex, 0, movedItem);
 
-        chrome.storage.local.set({ sites: sites }, () => {
-          customSearchPreview();
-        });
+        chrome.storage.local.set({ sites: sites }, () => customSearchPreview);
       }
     });
 
     toggleSortableState(sortableButton.checked);
-    toggleEditMode(editButton.checked, false); // Don't save on initial load
+    toggleEditMode(editButton.checked, false);
+    toggleVisibleState(visibleButton.checked);
     toggleDeleteVisibility(deleteButton.checked);
   });
 }
@@ -258,6 +283,8 @@ sortableButton.addEventListener("change", (e) => {
   if (isChecked) {
     editButton.checked = false;
     toggleEditMode(false, false);
+    visibleButton.checked = false;
+    toggleVisibleState(false);
     deleteButton.checked = false;
     toggleDeleteVisibility(false);
   }
@@ -310,6 +337,8 @@ editButton.addEventListener("change", (e) => {
   if (isChecked) {
     sortableButton.checked = false;
     toggleSortableState(false);
+    visibleButton.checked = false;
+    toggleVisibleState(false);
     deleteButton.checked = false;
     toggleDeleteVisibility(false);
   }
@@ -340,12 +369,60 @@ function exitEditRows(rows) {
     }
   });
 }
-// --- 編集ボタンの表示制御 ここまで---
+// --- 編集ボタンの表示制御 ここまで ---
 
-// --- 削除ボタンの表示制御 ここから---
-function toggleDeleteVisibility(checked) {
-  document.querySelectorAll('.delete-list-td').forEach((element) => {
-    element.classList.toggle('d-none', !checked);
+// --- 表示ボタンの表示制御 ここから ---
+function toggleVisibleState(isVisible) {
+  document.querySelectorAll('.action-list-td').forEach((element) => {
+    // どちらかのボタンが有効ならtdは表示
+    element.classList.toggle('d-none', !isVisible && !deleteButton.checked);
+    // visibleボタン自体の表示/非表示
+    element.querySelector('.visible-list-btn')?.classList.toggle('d-none', !isVisible);
+  });
+}
+
+siteQueryListTable.addEventListener('click', (e) => {
+  const visibleBtn = e.target.closest('.visible-list-btn');
+  if (visibleBtn) {
+    const index = parseInt(visibleBtn.dataset.index, 10);
+    chrome.storage.local.get(['sites'], (data) => {
+      const sites = data.sites ?? [];
+      if (sites[index]) {
+        // isVisibleプロパティを反転（undefinedの場合はtrueとして扱う）
+        sites[index].isVisible = !(sites[index].isVisible !== false);
+        chrome.storage.local.set({ sites: sites }, () => {
+          // UIを更新
+          customSearchPreview();
+          listSites();
+          messageOutput(dateTime(), `${sites[index].name} の表示を${sites[index].isVisible ? 'ON' : 'OFF'}にしました。`);
+        });
+      }
+    });
+  }
+});
+
+
+visibleButton.addEventListener("change", (e) => {
+  const isChecked = e.target.checked;
+  alertInfo(isChecked, '表示: 表示/非表示を切り替えます.');
+  toggleVisibleState(isChecked);
+
+  if (isChecked) {
+    editButton.checked = false;
+    toggleEditMode(false, false);
+    sortableButton.checked = false;
+    toggleSortableState(false);
+    deleteButton.checked = false;
+    toggleDeleteVisibility(false);
+  }
+});
+// --- 表示ボタンの表示制御 ここまで ---
+
+// --- 削除ボタンの表示制御 ここから ---
+function toggleDeleteVisibility(isChecked) {
+  document.querySelectorAll('.action-list-td').forEach((element) => {
+    element.classList.toggle('d-none', !isChecked && !visibleButton.checked);
+    element.querySelector('.delete-list-btn')?.classList.toggle('d-none', !isChecked);
   });
 };
 
@@ -359,9 +436,11 @@ deleteButton.addEventListener("change", (e) => {
     toggleEditMode(false, false);
     sortableButton.checked = false;
     toggleSortableState(false);
+    visibleButton.checked = false;
+    toggleVisibleState(false);
   }
 });
-// --- 削除ボタンの表示制御 ここまで---
+// --- 削除ボタンの表示制御 ここまで ---
 
 // 検索結果のURL
 const searchUrl = document.getElementById("searchUrl");
