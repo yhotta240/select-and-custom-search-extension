@@ -182,7 +182,7 @@ function customSearch(selectedText) {
       selBox.addEventListener('click', function (event) {
         event.preventDefault();
         chrome.storage.local.set({ isSearchLoad: site.searchQuery ? false : true }, function () {
-          const searchUrl = site.searchQuery ? `${site.url}${site.searchQuery}${encodeURIComponent(selectedText)}` : site.url;
+          const searchUrl = site.searchQuery ? `${site.url}${site.searchQuery}${encodeURIComponent(selectedText)}${site.urlSuffix || ''}` : site.url;
           switch (searchMode) {
             case 'new-tab':
               window.open(searchUrl, '_blank');

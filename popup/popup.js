@@ -21,20 +21,20 @@ chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
 
 
 const defaultSites = [
-  { name: "google.com", url: "https://google.com", searchQuery: "/search?q=", isVisible: true },
-  { name: "www.youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=", isVisible: true },
-  { name: "x.com", url: "https://x.com", searchQuery: "/search?q=", isVisible: true },
-  { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=", isVisible: true },
-  { name: "search.rakuten.co.jp", url: "https://search.rakuten.co.jp", searchQuery: "/search/mall/", isVisible: true },
-  { name: "chatgpt.com", url: "https://chatgpt.com", searchQuery: "/search?q=", isVisible: true },
-  { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "/search/new?q=", isVisible: true },
-  { name: "open.spotify.com", url: "https://open.spotify.com", searchQuery: "/search/", isVisible: true },
-  { name: "www.pixiv.net", url: "https://www.pixiv.net", searchQuery: "/search?q=", isVisible: true },
-  { name: "github.com", url: "https://github.com", searchQuery: "/search?q=", isVisible: true },
-  { name: "www.deepl.com", url: "https://www.deepl.com", searchQuery: "/#en/ja/", isVisible: true },
-  { name: "ja.wikipedia.org", url: "https://ja.wikipedia.org", searchQuery: "/wiki/", isVisible: true },
-  { name: "store.steampowered.com", url: "https://store.steampowered.com", searchQuery: "/search/?term=", isVisible: true },
-  { name: "www.cmoa.jp", url: "https://www.cmoa.jp", searchQuery: "/search/result/?header_word=", isVisible: true },
+  { name: "google.com", url: "https://google.com", searchQuery: "/search?q=", urlSuffix: "", isVisible: true },
+  { name: "www.youtube.com", url: "https://www.youtube.com", searchQuery: "/results?search_query=", urlSuffix: "", isVisible: true },
+  { name: "x.com", url: "https://x.com", searchQuery: "/search?q=", urlSuffix: "", isVisible: true },
+  { name: "www.amazon.co.jp", url: "https://www.amazon.co.jp", searchQuery: "/s?k=", urlSuffix: "", isVisible: true },
+  { name: "search.rakuten.co.jp", url: "https://search.rakuten.co.jp", searchQuery: "/search/mall/", urlSuffix: "", isVisible: true },
+  { name: "chatgpt.com", url: "https://chatgpt.com", searchQuery: "/search?q=", urlSuffix: "", isVisible: true },
+  { name: "www.perplexity.com", url: "https://www.perplexity.com", searchQuery: "/search/new?q=", urlSuffix: "", isVisible: true },
+  { name: "open.spotify.com", url: "https://open.spotify.com", searchQuery: "/search/", urlSuffix: "", isVisible: true },
+  { name: "www.pixiv.net", url: "https://www.pixiv.net", searchQuery: "/search?q=", urlSuffix: "", isVisible: true },
+  { name: "github.com", url: "https://github.com", searchQuery: "/search?q=", urlSuffix: "", isVisible: true },
+  { name: "www.deepl.com", url: "https://www.deepl.com", searchQuery: "/#en/ja/", urlSuffix: "", isVisible: true },
+  { name: "ja.wikipedia.org", url: "https://ja.wikipedia.org", searchQuery: "/wiki/", urlSuffix: "", isVisible: true },
+  { name: "store.steampowered.com", url: "https://store.steampowered.com", searchQuery: "/search/?term=", urlSuffix: "", isVisible: true },
+  { name: "www.cmoa.jp", url: "https://www.cmoa.jp", searchQuery: "/search/result/?header_word=", urlSuffix: "", isVisible: true },
   // { name: "getbootstrap.com", url: "https://getbootstrap.com", inputForm: "input[id='docsearch-input']", inputButton: "button[class='DocSearch DocSearch-Button']" },
 ];
 
@@ -208,6 +208,7 @@ function listSites() {
     sites.forEach((site, index) => {
       const iconUrl = getFaviconUrl(site.url);
       const isVisible = site.isVisible !== false; // undefined or true is visible
+      const urlSuffix = normalize(site?.urlSuffix);
       const row = document.createElement('tr');
       row.innerHTML = `
         <td class="text-center sortable-list-td bg-outline-secondary d-none" style="cursor: grab;">
@@ -227,6 +228,7 @@ function listSites() {
         <td class='text-nowrap'>${site.name}</td>
         <td class='text-nowrap'>${site.url}</td>
         <td class='text-nowrap'>${site.searchQuery}</td>
+        <td class='text-nowrap'>${urlSuffix}</td>
         <td class='text-nowrap d-none'>${site.inputForm}</td>
         <td class='text-nowrap d-none'>${site.inputButton}</td>
       `;
@@ -251,7 +253,10 @@ function listSites() {
         const [movedItem] = sites.splice(evt.oldIndex, 1);
         sites.splice(evt.newIndex, 0, movedItem);
 
-        chrome.storage.local.set({ sites: sites }, () => customSearchPreview);
+        chrome.storage.local.set({ sites: sites }, () => {
+          customSearchPreview();
+          messageOutput(dateTime(), '登録サイトリストを並び替えました.');
+        });
       }
     });
 
@@ -260,6 +265,9 @@ function listSites() {
     toggleVisibleState(visibleButton.checked);
     toggleDeleteVisibility(deleteButton.checked);
   });
+  function normalize(value) {
+    return value == null || value === "undefined" ? "" : value;
+  }
 }
 
 // --- 並び替えボタンの表示制御 ここから ---
@@ -308,24 +316,52 @@ function toggleEditMode(isEditing, shouldSave) {
             const nameInput = row.cells[3].querySelector('input');
             const urlInput = row.cells[4].querySelector('input');
             const queryInput = row.cells[5].querySelector('input');
+            const urlSuffixInput = row.cells[6].querySelector('input');
 
             if (nameInput && urlInput && queryInput) {
               sites[index].name = nameInput.value;
               sites[index].url = urlInput.value;
               sites[index].searchQuery = queryInput.value;
+              sites[index].urlSuffix = urlSuffixInput.value;
             }
           }
         });
 
         chrome.storage.local.set({ sites: sites }, () => {
-          messageOutput(dateTime(), '登録サイトリストを更新しました．');
           customSearchPreview(); // 検索ボックスを更新
+          messageOutput(dateTime(), '登録サイトリストを更新しました．');
         });
       });
     } else {
       // 編集モードから戻す
       exitEditRows(rows);
     }
+  }
+
+  // 行を編集モードに切り替え
+  function editRows(rows) {
+    rows.forEach(row => {
+      // hostname, url, searchQuery, urlSuffix
+      for (let i = 3; i <= 6; i++) {
+        const cell = row.cells[i];
+        const originalText = cell.textContent;
+        cell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${originalText}">`;
+      }
+    });
+  }
+
+  // 行を編集モードから戻す
+  function exitEditRows(rows) {
+    rows.forEach(row => {
+      // hostname, url, searchQuery, urlSuffix
+      for (let i = 3; i <= 6; i++) {
+        const cell = row.cells[i];
+        const input = cell.querySelector('input');
+        if (input) {
+          cell.innerHTML = input.value;
+        }
+      }
+    });
   }
 }
 
@@ -344,31 +380,6 @@ editButton.addEventListener("change", (e) => {
   }
 });
 
-// 行を編集モードに切り替え
-function editRows(rows) {
-  rows.forEach(row => {
-    // hostname, url, searchQuery
-    for (let i = 3; i <= 5; i++) {
-      const cell = row.cells[i];
-      const originalText = cell.textContent;
-      cell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${originalText}">`;
-    }
-  });
-}
-
-// 行を編集モードから戻す
-function exitEditRows(rows) {
-  rows.forEach(row => {
-    // hostname, url, searchQuery
-    for (let i = 3; i <= 5; i++) {
-      const cell = row.cells[i];
-      const input = cell.querySelector('input');
-      if (input) {
-        cell.innerHTML = input.value;
-      }
-    }
-  });
-}
 // --- 編集ボタンの表示制御 ここまで ---
 
 // --- 表示ボタンの表示制御 ここから ---
@@ -400,7 +411,6 @@ siteQueryListTable.addEventListener('click', (e) => {
     });
   }
 });
-
 
 visibleButton.addEventListener("change", (e) => {
   const isChecked = e.target.checked;
