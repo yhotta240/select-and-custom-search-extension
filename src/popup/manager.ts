@@ -26,16 +26,12 @@ export class PopupManager {
   private manifestData: chrome.runtime.Manifest;
   private manifestMetadata: ManifestMetadata;
   private enabledElement: HTMLInputElement | null;
-  // private notificationToggle: HTMLInputElement | null;
-  // private fontSizeRange: HTMLInputElement | null;
 
   constructor() {
     this.panel = new PopupPanel();
     this.manifestData = chrome.runtime.getManifest();
     this.manifestMetadata = meta || {};
     this.enabledElement = document.getElementById("enabled") as HTMLInputElement | null;
-    // this.notificationToggle = document.getElementById('notification-toggle') as HTMLInputElement | null;
-    // this.fontSizeRange = document.getElementById('font-size') as HTMLInputElement | null;
 
     this.initialize();
   }
@@ -135,20 +131,6 @@ export class PopupManager {
         await this.showLog("シェアに失敗しました", "error");
       }
     });
-
-    // 他の設定項目のイベントリスナー例
-
-    // チェックボックスの例:
-    // this.notificationToggle?.addEventListener('change', (event) => {
-    //   const checked = (event.target as HTMLInputElement).checked;
-    //   this.updateSettings({ notifications: checked }, `通知を${checked ? '有効' : '無効'}にしました`, '通知の保存に失敗しました');
-    // });
-
-    // スライダーの例:
-    // this.fontSizeRange?.addEventListener('change', (event) => {
-    //   const fontSize = (event.target as HTMLInputElement).value;
-    //   this.updateSettings({ fontSize: Number(fontSize) }, 'フォントサイズを保存しました', 'フォントサイズの保存に失敗しました');
-    // });
   }
 
   // biome-ignore lint/correctness/noUnusedPrivateClassMembers: 設定を更新する際はこの関数を呼び出してください
