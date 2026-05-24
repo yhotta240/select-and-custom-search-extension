@@ -14,6 +14,7 @@ const MARKDOWN_CLASS_MAP: Record<string, string> = {
   ul: "md-ul",
   ol: "md-ol",
   li: "md-li",
+  img: "img-fluid",
 };
 
 /**
@@ -75,11 +76,17 @@ function createAccordionHTML(docs: DocItem[]): string {
 
 /**
  * Markdown のタグにクラスを付与する
- */
+*/
 function applyMarkdownClassMap(html: string): string {
   return Object.entries(MARKDOWN_CLASS_MAP).reduce((result, [tag, className]) => {
-    const openTag = `<${tag}>`;
-    const openTagWithClass = `<${tag} class="${className}">`;
-    return result.replace(new RegExp(openTag, "g"), openTagWithClass);
+    const regex = new RegExp(`<${tag}(\\s[^>]*)?>`, "g");
+
+    return result.replace(regex, (match, attrs = "") => {
+      if (match.includes("class=")) {
+        return match.replace(/class="([^"]*)"/, `class="$1 ${className}"`);
+      }
+
+      return `<${tag}${attrs} class="${className}">`;
+    });
   }, html);
 }
