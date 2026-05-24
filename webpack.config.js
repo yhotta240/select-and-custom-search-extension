@@ -33,7 +33,15 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        oneOf: [
+          {
+            resourceQuery: /raw/,
+            type: "asset/source"
+          },
+          {
+            use: ["style-loader", "css-loader"]
+          }
+        ]
       },
       {
         test: /\.tsx?$/,
