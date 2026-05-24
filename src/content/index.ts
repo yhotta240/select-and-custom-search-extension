@@ -104,7 +104,6 @@ function customSearch(selectedText: string): void {
 
   const range = selection.getRangeAt(0);
   const rect = range.getBoundingClientRect();
-
   chrome.storage.local.get(
     [
       "sites",
@@ -119,10 +118,10 @@ function customSearch(selectedText: string): void {
     (data: Record<string, unknown>) => {
       const sites = data.sites as Array<Record<string, unknown>> | undefined;
       const selectPosition = data.selectPosition as string | undefined;
-      const textDistance = data.textDistance as number | string | undefined;
+      const textDistance = Number(data.textDistance ?? 5);
       const newTheme = (data.theme as string) || "light";
       const iconNum = Number(data.iconNum ?? 5);
-      const searchMode = data.searchMode as string | undefined;
+      const searchMode = (data.searchMode as string | undefined) ?? "new-tab";
       const isExpanded = Boolean(data.isExpanded);
       const isIconWrap = Boolean(data.isIconWrap);
 
@@ -139,7 +138,7 @@ function customSearch(selectedText: string): void {
         { top?: number; left?: number; right?: number; bottom?: number; position?: string }
       > = {
         default: {
-          top: rect.bottom + window.scrollY + Number(textDistance),
+          top: rect.bottom + window.scrollY + textDistance,
           left: rect.left + window.scrollX,
           position: "absolute",
         },
