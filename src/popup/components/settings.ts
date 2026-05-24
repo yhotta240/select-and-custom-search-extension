@@ -1,4 +1,5 @@
 import Sortable from "sortablejs";
+import "../../content/content.css";
 import { getStorage, setStorage } from "../../utils/storage";
 import type { Site } from "../types";
 
