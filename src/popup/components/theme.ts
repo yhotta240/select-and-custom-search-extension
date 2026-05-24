@@ -5,7 +5,7 @@ import type { Theme } from "../types";
  */
 export function getTheme(): Theme {
   const t = localStorage.getItem("theme");
-  return (t as Theme) || "system";
+  return (t as Theme) || "light";
 }
 
 export function setTheme(theme: Theme): void {
