@@ -6,6 +6,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.1]
+
+### Added
+
+- デフォルトの検索サイトリストに claude.ai を追加
+
+### Fixed
+
+- デフォルトの ChatGPT の検索クエリを修正
+
+### Improved
+
+- ポップアップの一部UI/UX改善
+
 ## [1.5.0]
 
 ### Added
