@@ -553,11 +553,6 @@ export async function setupSettingsTab(): Promise<void> {
     if (searchUrlInput) searchUrlInput.value = "";
   });
 
-  const newTabButton = qs<HTMLButtonElement>("new-tab-button");
-  newTabButton?.addEventListener("click", () => {
-    chrome.tabs.create({ url: "popup/popup.html" });
-  });
-
   await customSearchPreview();
 }
 
