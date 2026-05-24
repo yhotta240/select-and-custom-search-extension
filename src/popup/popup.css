@@ -76,6 +76,29 @@ html {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
+/* ダークテーマ時のホバー色（より視認性を確保） */
+[data-bs-theme="dark"] #theme-button:hover,
+[data-bs-theme="dark"] #more-button:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ダークテーマ時のプレビュー内テーマ切替ボタンの調整
+   - `btn-outline-dark` のままでは暗背景で見えづらいので色と境界線を上書きします */
+.theme-dark #change-theme-icon,
+[data-bs-theme="dark"] #change-theme-icon {
+  color: #f8f9fa;
+  border-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+.theme-dark #change-theme-icon:hover,
+[data-bs-theme="dark"] #change-theme-icon:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+.theme-dark #change-theme-icon i,
+[data-bs-theme="dark"] #change-theme-icon i {
+  color: inherit;
+}
+
 #theme-menu {
   position: absolute;
   top: 36px;
