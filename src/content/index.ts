@@ -1,5 +1,4 @@
 import "./content.css";
-import { logInfo } from "../utils/logger";
 
 let isEnabled = false;
 const _manifestData = chrome.runtime.getManifest();
@@ -290,5 +289,3 @@ function customSearch(selectedText: string): void {
 function getFaviconUrl(domain: string): string {
   return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
 }
-
-logInfo(`ページ読み込み: ${document.title || location.pathname}`, "content");
