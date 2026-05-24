@@ -61,9 +61,6 @@ export class PopupManager {
       this.settings = await getSettings();
       this.enabled = await isEnabled();
       if (this.enabledElement) this.enabledElement.checked = this.enabled;
-      await this.showLog(
-        `${this.manifestData.short_name} は現在 ${this.enabled ? "有効" : "無効"} です`,
-      );
     } catch (err) {
       console.error("error", err);
       await this.showLog("設定の読み込みに失敗しました", "error", err);
