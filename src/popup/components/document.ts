@@ -76,7 +76,7 @@ function createAccordionHTML(docs: DocItem[]): string {
 
 /**
  * Markdown のタグにクラスを付与する
-*/
+ */
 function applyMarkdownClassMap(html: string): string {
   return Object.entries(MARKDOWN_CLASS_MAP).reduce((result, [tag, className]) => {
     const regex = new RegExp(`<${tag}(\\s[^>]*)?>`, "g");
