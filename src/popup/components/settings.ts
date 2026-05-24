@@ -150,10 +150,26 @@ async function customSearchPreview(): Promise<void> {
 
   const selBoxElement = document.createElement("div");
   selBoxElement.className = "my-extension-root sel-box-element";
-  Object.assign(selBoxElement.style, { maxWidth: `${maxWidth}px`, zIndex: "0" });
+  // プレビューでも実UIと同じ外装スタイルをホスト要素へ適用
+  // （ボーダー・影・角丸は Shadow DOM 外側で管理されるため）
+  Object.assign(selBoxElement.style, {
+    maxWidth: `${maxWidth}px`,
+    zIndex: "0",
+    display: "inline-flex",
+    flexWrap: "wrap",
+    pointerEvents: "auto",
+    // ボーダー幅によるレイアウト崩れを防ぐため、幅にボーダーを含める
+    boxSizing: "border-box",
+    borderRadius: "0.5rem",
+    boxShadow:
+      theme === "dark"
+        ? "rgba(255, 255, 255, 0.06) 0px 2px 4px"
+        : "rgba(0, 0, 0, 0.08) 0px 4px 6px",
+  });
 
   const selBoxGroup = document.createElement("div");
-  selBoxGroup.className = "btn-group1 my-extension-root flex-wrap1 w-100";
+  // content.css の共有スタイルがプレビューに適用されるよう `selBoxGroup` クラスを付与
+  selBoxGroup.className = "btn-group1 selBoxGroup my-extension-root flex-wrap1 w-100";
   selBoxGroup.style.height = isExpanded ? `${20 + padding * 2 + gap + groupPadding}px` : "auto";
   selBoxGroup.style.backgroundColor = theme === "light" ? "#ffffff" : "#292e33";
   selBoxGroup.setAttribute("role", "group");
