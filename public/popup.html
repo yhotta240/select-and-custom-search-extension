@@ -118,26 +118,17 @@
             <!-- テーマチェンジ -->
             <input class="btn-check " type="checkbox" id="change-theme">
             <label id="change-theme-icon" class="btn btn-outline-dark p-1 btn-sm" for="change-theme" title="テーマチェンジ">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-brightness-high-fill" viewBox="0 0 16 16">
-                <path
-                  d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708" />
-              </svg>
+              <i class="bi bi-circle-half" aria-hidden="true" style="font-size:16px;"></i>
             </label>
             <!-- リスト表示 ボタン表示 -->
             <div class="btn-group ms-2" role="group" aria-label="Basic radio toggle button group">
               <input type="radio" class="btn-check p-1 " name="btn-radio" id="btn-radio1" autocomplete="off" checked>
               <label class="btn btn-outline-dark p-1 btn-sm" for="btn-radio1" title="アイコン表示">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                  class="bi bi-grid-3x2-gap-fill" viewBox="0 0 16 16">
-                  <path
-                    d="M1 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zM1 9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z" />
-                </svg>
+                <i class="bi bi-grid-3x3-gap" aria-hidden="true" style="font-size:16px;"></i>
               </label>
               <!-- <input type="radio" class="btn-check p-1" name="btn-radio" id="btn-radio2" autocomplete="off">
               <label class="btn btn-outline-dark p-1 btn-sm" for="btn-radio2" title="リスト表示">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-ul"
-                  viewBox="0 0 16 16">
+                <i class="bi bi-list-ul" aria-hidden="true" style="font-size:16px;"></i>
                   <path fill-rule="evenodd"
                     d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
                 </svg>
@@ -241,8 +232,8 @@
           <div id="paramSection" class="d-none">
             <label for="paramSelect" class="form-label" id="select-label">検索に使用するパラメータを選択してください:</label>
             <select id="paramSelect" class="form-select"></select>
-            <div class="d-flex justify-content-end"><button id="registerButton"
-                class=" btn btn-success mt-3">登録</button>
+            <div class="d-flex justify-content-end">
+              <button id="registerButton" type="button" class="btn btn-success mt-3">登録</button>
             </div>
           </div>
           <div id="templateSection" class="card border-warning bg-warning-subtle shadow-sm p-3 my-3 d-none">
@@ -266,11 +257,7 @@
           <input type="checkbox" class="btn-check" id="sortable-btn-outlined" autocomplete="off">
           <label class="btn btn-outline-secondary text-nowrap btn-sm" title="並び替え" for="sortable-btn-outlined"
             data-action="sortable">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter-left"
-              viewBox="0 0 16 16">
-              <path
-                d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
-            </svg>
+            <i class="bi bi-filter-left" aria-hidden="true" style="font-size:16px;"></i>
             並び替え
           </label>
 
@@ -278,13 +265,7 @@
           <input type="checkbox" class="btn-check" id="edit-btn-outlined" autocomplete="off">
           <label class="btn btn-outline-success text-nowrap btn-sm" title="編集" for="edit-btn-outlined"
             data-action="edit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-              class="bi bi-pencil-square" viewBox="0 0 16 16">
-              <path
-                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-              <path fill-rule="evenodd"
-                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-            </svg>
+            <i class="bi bi-pencil-square" aria-hidden="true" style="font-size:16px;"></i>
             編集
           </label>
 
@@ -292,34 +273,20 @@
           <input type="checkbox" class="btn-check" id="visible-btn-outlined" autocomplete="off">
           <label class="btn btn-outline-primary text-nowrap btn-sm" title="表示" for="visible-btn-outlined"
             data-action="toggle-visible">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye"
-              viewBox="0 0 16 16">
-              <path
-                d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
-              <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
-            </svg>
+            <i class="bi bi-eye" aria-hidden="true" style="font-size:16px;"></i>
             表示
           </label>
 
           <!-- 削除ボタン -->
           <input type="checkbox" class="btn-check" id="delete-btn-outlined" autocomplete="off">
           <label class="btn btn-outline-danger text-nowrap btn-sm" title="削除" for="delete-btn-outlined">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3"
-              viewBox="0 0 16 16">
-              <path
-                d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5">
-              </path>
-            </svg>
+            <i class="bi bi-trash3" aria-hidden="true" style="font-size:16px;"></i>
             削除
           </label>
         </div>
       </div>
       <div id="alert-info" class="alert alert-info mb-2 py-1 d-none" role="alert">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-          class="bi bi-info-circle-fill" viewBox="0 0 16 16">
-          <path
-            d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
-        </svg>
+        <i class="bi bi-info-circle-fill" aria-hidden="true" style="font-size:16px;"></i>
         <span id="alert-info-text"></span>
       </div>
 
