@@ -1,5 +1,15 @@
 export type Theme = "system" | "light" | "dark";
 
+export interface Site {
+  name: string;
+  url: string;
+  searchQuery?: string;
+  urlSuffix?: string;
+  isVisible?: boolean;
+  inputForm?: string;
+  inputButton?: string;
+}
+
 export type SharePlatform = "twitter" | "facebook" | "copy";
 
 export interface ShareConfig {

@@ -13,6 +13,7 @@ import { setupDocumentTab } from "./components/document";
 import { setupInfoTab } from "./components/info";
 import { setupMoreMenu } from "./components/menu";
 import { PopupPanel } from "./components/panel";
+import { setupSettingsTab } from "./components/settings";
 import { initShareMenu } from "./components/share";
 import { applyTheme, setupThemeMenu } from "./components/theme";
 import { setupVersionTab } from "./components/version";
@@ -185,6 +186,8 @@ export class PopupManager {
     }
 
     setupMoreMenu();
+    // 設定タブの初期化
+    setupSettingsTab().catch((e) => console.error("failed to setup settings tab", e));
     setupInfoTab(this.manifestData, this.manifestMetadata);
     setupDocumentTab();
     setupVersionTab(this.manifestData.version);

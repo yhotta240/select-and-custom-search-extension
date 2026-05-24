@@ -3,7 +3,13 @@
 
 html {
   font-size: 0.9rem;
-  min-width: 28rem;
+  width: 30rem;
+}
+
+@media (min-width: 30rem) {
+  html {
+    width: auto !important;
+  }
 }
 
 @media (min-width: 768px) {
@@ -13,6 +19,10 @@ html {
 
   .container-md {
     max-width: 720px !important;
+  }
+
+  .table-responsive {
+    overflow-x: visible !important;
   }
 
   i {
@@ -133,4 +143,20 @@ html {
 
 svg {
   stroke: currentColor;
+}
+
+/* 並び替えが有効な時にテキスト選択を無効にする */
+#site-query-list.sorting-enabled td {
+  user-select: none;
+}
+
+/* ドラッグ中の行のスタイル */
+.sortable-ghost {
+  opacity: 0.4;
+  background-color: #c8ebfb;
+}
+
+/* isVisible: false の時のアイコンのスタイル */
+.icon-is-hidden {
+  border-color: white;
 }
