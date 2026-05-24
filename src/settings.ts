@@ -1,6 +1,4 @@
 export type Settings = {
-  // notifications?: boolean;
-  // fontSize?: number;
   [key: string]: unknown;
 };
 

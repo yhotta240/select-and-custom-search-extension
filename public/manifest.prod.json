@@ -8,7 +8,8 @@
     "48": "icons/icon.png"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "contextMenus"
   ],
   "action": {
     "default_popup": "popup.html"
