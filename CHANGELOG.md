@@ -1,10 +1,13 @@
-<!--
-リリースは H2 見出し（##）で区切ってください．
-フォーマットは Keep a Changelog 準拠を推奨します．
--->
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [1.5.2] - 2026-05-24
+
+### Fixed
+
+- 検索ボックスがページCSSの影響を受けないように修正
+- ダークテーマ時のホバー色とテーマ切替ボタンのスタイルを調整
 
 ## [1.5.1]
 
