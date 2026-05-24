@@ -54,14 +54,14 @@ const defaultSites: Site[] = [
   {
     name: "chatgpt.com",
     url: "https://chatgpt.com",
-    searchQuery: "/search?q=",
+    searchQuery: "/?prompt=",
     urlSuffix: "",
     isVisible: true,
   },
   {
-    name: "www.perplexity.com",
-    url: "https://www.perplexity.com",
-    searchQuery: "/search/new?q=",
+    name: "claude.ai",
+    url: "https://claude.ai",
+    searchQuery: "/new?q=",
     urlSuffix: "",
     isVisible: true,
   },
