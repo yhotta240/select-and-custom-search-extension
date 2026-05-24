@@ -1,0 +1,42 @@
+{
+	"name": "select-and-custom-search-extension",
+	"version": "0.3.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"check": "biome check src",
+		"check:fix": "biome check --write --unsafe src",
+		"typecheck": "tsc --noEmit",
+		"build": "npm run check && npm run typecheck && cross-env NODE_ENV=production webpack",
+		"build:dev": "cross-env NODE_ENV=development webpack",
+		"watch": "cross-env NODE_ENV=development webpack --watch",
+		"pack": "npm run build && exr pack dist/",
+		"release": "exr release dist/ --force"
+	},
+	"keywords": [],
+	"author": "yhotta240",
+	"license": "MIT",
+	"devDependencies": {
+		"@biomejs/biome": "2.4.9",
+		"@types/chrome": "^0.1.6",
+		"@types/marked": "^5.0.2",
+		"@yhotamos/extension-release-cli": "^0.5.0",
+		"copy-webpack-plugin": "^14.0.0",
+		"cross-env": "^10.1.0",
+		"css-loader": "^7.1.4",
+		"gray-matter": "^4.0.3",
+		"marked": "^17.0.3",
+		"raw-loader": "^4.0.2",
+		"sanitize-html": "^2.17.1",
+		"style-loader": "^4.0.0",
+		"ts-loader": "^9.5.4",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.2",
+		"webpack": "^5.101.3",
+		"webpack-cli": "^6.0.1",
+		"ws": "^8.18.3"
+	},
+	"dependencies": {
+		"bootstrap": "^5.3.8"
+	}
+}
