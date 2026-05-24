@@ -1,7 +1,7 @@
 {
-  "issues_url": "https://github.com/yhotamos/chrome-extension-starter-kit/issues",
+  "issues_url": "https://yhotamos.com/support/issue?tool=select-and-custom-search-extension",
   "languages": ["ja"],
-  "publisher": "example",
-  "developer": "example@example.com",
-  "github_url": "https://github.com/yhotamos/chrome-extension-starter-kit"
+  "publisher": "yhotta240",
+  "developer": "yhotta240@gmail.com",
+  "github_url": "https://github.com/yhotta240/select-and-custom-search-extension"
 }
