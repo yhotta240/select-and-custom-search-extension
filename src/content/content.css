@@ -1,97 +1,104 @@
-/* ボタングループの全体スタイル */
-.btn-group1 {
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-  background-color: #ffffff;
-  vertical-align: middle;
-  height: auto;
+/* shadow host 用のデフォルト変数: shadow DOM 内のスタイルは :host を通じて参照する */
+:host {
+  --button-size: 28px;
+  --btn-padding: 4px;
+  --group-padding: 6px;
+  --group-padding-bottom: 2px;
+  --gap: 2px;
+}
+
+/* host の見た目は CSS 側で管理する */
+:host {
+  pointer-events: auto;
+  background-color: var(--host-theme, #ffffff);
+  --host-foreground: var(--host-fg, #0e0d0d);
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 6px;
   display: inline-flex;
-  flex-wrap: wrap;
-  padding: 6px;
-  gap: 2px;
-}
-
-.expand-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  height: auto;
   vertical-align: middle;
-  border: 1px solid transparent;
-  line-height: 1.5;
-  transition: all 0.2s ease-in-out;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 0.5rem;
-  width: 100%;
-  padding: 0px;
-  margin: 0px;
-  border-bottom-left-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
 }
 
-/* ボタンのスタイル */
+/* アイコングリッド: iconNum 列で表示。expanded 時は複数行になる */
+.btn-group1 {
+  display: grid;
+  grid-template-columns: repeat(var(--icon-num, 5), var(--button-size));
+  grid-auto-rows: var(--button-size);
+  gap: var(--gap);
+  padding: var(--group-padding) var(--group-padding) var(--group-padding-bottom);
+  background-color: var(--host-theme, #ffffff);
+  border-radius: 0.5rem;
+}
+
+/* compact（閉じ）: 1行分だけ表示 */
+.btn-group1.compact {
+  height: var(--button-size);
+  overflow: hidden;
+}
+
+/* off-button を常にグリッドの最後に配置する
+   - expanded: 通常の最後のアイテムとして表示
+   - compact: 1行目の最後列に固定して必ず見えるようにする */
+.btn-group1 > #off-button {
+  justify-self: center;
+  align-self: center;
+}
+
+.btn-group1.compact > #off-button {
+  grid-column: var(--icon-num);
+  grid-row: 1;
+  z-index: 1;
+}
+
+/* アイコンボタン */
 .btn1 {
   display: inline-flex;
   align-items: center;
-  justify-content: start;
-  vertical-align: middle;
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
-  line-height: 1.5;
-  transition: all 0.2s ease-in-out;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-/* ライトテーマのボタン */
-.btn-light1 {
-  background-color: #ffffff;
-  color: #0e0d0d;
-}
-
-.btn-light1:hover {
-  background-color: #c6cdd6;
-  color: #0c0c0c;
-}
-
-/* ダークテーマのボタン */
-.btn-dark1 {
-  background-color: #292e33;
-  color: #ffffff;
-}
-
-.btn-dark1:hover {
-  background-color: #15191f;
-  color: #ffffff;
-}
-
-/* アイコン付きボタン */
-.btn-icon1 {
-  background: none;
+  justify-content: center;
   border: none;
-  display: flex;
+  background: var(--host-theme, #ffffff);
+  padding: 0;
+  color: var(--host-foreground);
+  cursor: pointer;
+  border-radius: 0.3rem;
+}
+
+.btn1:hover {
+  background: rgba(0, 0, 0, 0.20);
+}
+
+.btn-icon1 {
+  box-sizing: border-box;
+  padding: var(--btn-padding);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
 }
 
 .btn-icon1 img {
-  display: block;
+  width: 20px;
   height: 20px;
 }
 
-.dragging {
-  opacity: 0.5;
-  transform: scale(1.1);
+/* inline SVG should inherit currentColor */
+.btn1 svg,
+.btn-icon1 svg {
+  fill: currentColor;
 }
 
-.selBoxGroup a {
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
+/* expand ボタン（常に幅いっぱい） */
+.expand-btn {
+  width: 100%;
+  display: block;
+  text-align: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--host-foreground);
 }
 
-.selBoxGroup a.over {
-  transform: translateX(-20px);
+.expand-btn:hover {
+  background: rgba(0, 0, 0, 0.20);
 }

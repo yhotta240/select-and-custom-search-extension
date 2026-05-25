@@ -35,77 +35,41 @@ export function customSearch(selectedText: string): void {
       const iconNum = Number(data.iconNum ?? 5);
       const searchMode = (data.searchMode as string | undefined) ?? "new-tab";
       const isExpanded = Boolean(data.isExpanded);
-      const isIconWrap = Boolean(data.isIconWrap);
-
-      const gap = 2;
-      const groupPadding = 6;
-      const padding = 4;
-      const buttonWidth = 20;
-      let maxWidth = iconNum * (buttonWidth + 2 * padding + gap) - gap + 2 * groupPadding;
 
       const positions: Record<
         string,
-        { top?: number; left?: number; right?: number; bottom?: number; position?: string }
+        { top?: number; left?: number; right?: number; bottom?: number; position: string }
       > = {
         default: {
           top: rect.bottom + window.scrollY + textDistance,
           left: rect.left + window.scrollX,
           position: "absolute",
         },
-        "top-left": { top: 0, left: 0 },
-        "top-right": { top: 0, right: 0 },
-        "bottom-left": { left: 0, bottom: 0 },
-        "bottom-right": { right: 0, bottom: 0 },
+        "top-left": { top: 0, left: 0, position: "fixed" },
+        "top-right": { top: 0, right: 0, position: "fixed" },
+        "bottom-left": { left: 0, bottom: 0, position: "fixed" },
+        "bottom-right": { right: 0, bottom: 0, position: "fixed" },
       };
 
       const posKey = selectPosition || "default";
       const { top, left, right, bottom, position } = positions[posKey] || positions.default;
-      const windowWidth = document.documentElement.clientWidth;
-      let newIconsButton: number | undefined;
-
-      const isWrapWidth = posKey === "default" && (left ?? 0) + maxWidth > windowWidth;
-
-      if (posKey === "default" && isWrapWidth) {
-        const width = windowWidth - (left ?? 0);
-        const iconsWidth = width - 2 * groupPadding;
-        const iconsButton = iconsWidth / (buttonWidth + 2 * padding + gap);
-
-        if (iconNum > iconsButton) {
-          newIconsButton = isIconWrap
-            ? Math[
-                (iconsButton - Math.floor(iconsButton) >= 0.95 ? "ceil" : "floor") as
-                  | "ceil"
-                  | "floor"
-              ](iconsButton)
-            : undefined;
-          if (isIconWrap && typeof newIconsButton === "number") {
-            maxWidth = newIconsButton * (buttonWidth + 2 * padding + gap) - gap + 2 * groupPadding;
-          }
-        }
-      }
-
-      const backgroundColor = newTheme === "dark" ? "#292e33" : "#ffffff";
 
       // Shadow host（位置制御用コンテナ）：ページCSSの影響を受けないようインラインスタイルで完結させる
       const host = document.createElement("div");
       host.id = SEARCH_OVERLAY_ID;
       Object.assign(host.style as unknown as CSSStyleDeclaration, {
-        position: position || "fixed",
+        position: position,
         zIndex: "2147483647",
         top: top !== undefined ? `${top}px` : undefined,
-        left: !isIconWrap && isWrapWidth ? undefined : left !== undefined ? `${left}px` : undefined,
-        right: !isIconWrap && isWrapWidth ? "0px" : right !== undefined ? `${right}px` : undefined,
+        left: left !== undefined ? `${left}px` : undefined,
+        right: right !== undefined ? `${right}px` : undefined,
         bottom: bottom !== undefined ? `${bottom}px` : undefined,
-        pointerEvents: "auto",
-        maxWidth: `${maxWidth}px`,
-        backgroundColor,
-        borderRadius: "0.5rem",
-        boxShadow: "rgba(0, 0, 0, 0.3) 0px 4px 6px",
-        display: "inline-flex",
-        flexWrap: "wrap",
-        height: "auto",
-        verticalAlign: "middle",
       });
+
+      const themeColor = newTheme === "dark" ? "#292e33" : "#ffffff";
+      const fgColor = newTheme === "dark" ? "#ffffff" : "#0e0d0d";
+      host.style.setProperty("--host-theme", themeColor);
+      host.style.setProperty("--host-foreground", fgColor);
 
       // Shadow root：内部要素をページCSSから完全に隔離する
       const shadow = host.attachShadow({ mode: "open" });
@@ -114,19 +78,17 @@ export function customSearch(selectedText: string): void {
       shadow.appendChild(styleEl);
 
       // ボタングループ
-      const btnThemeColor = newTheme === "dark" ? "btn-dark1" : "btn-light1";
       const selBoxGroup = document.createElement("div");
       selBoxGroup.className = "btn-group1 flex-wrap1";
-      selBoxGroup.style.width = isIconWrap ? "auto" : `${maxWidth}px`;
-      selBoxGroup.style.height = isExpanded ? `${20 + padding * 2 + groupPadding}px` : "auto";
-      selBoxGroup.style.backgroundColor = backgroundColor;
+      host.style.setProperty("--icon-num", String(iconNum));
+      // isExpanded === true のときは拡張表示（compactクラスは折りたたみモード）
+      if (!isExpanded) selBoxGroup.classList.add("compact");
+      else selBoxGroup.classList.remove("compact");
       selBoxGroup.role = "group";
-      selBoxGroup.ariaLabel = "アイコンリンクボタングループ";
+      selBoxGroup.ariaLabel = "検索サイトの選択";
       selBoxGroup.id = "search-box";
 
-      const threshold = (newIconsButton ?? iconNum) - 1;
-      (sites || []).forEach((site, index) => {
-        if (isExpanded && index >= threshold) return;
+      (sites || []).forEach((site) => {
         const isVisible = (site?.isVisible as boolean | undefined) !== false;
         if (!isVisible) return;
 
@@ -137,8 +99,8 @@ export function customSearch(selectedText: string): void {
         selBox.id = (site?.name as string) || "";
         selBox.title = (site?.name as string) || "";
         selBox.target = "_blank";
-        selBox.className = `btn1 btn-icon1 m-auto1 ${btnThemeColor}`;
-        selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン" style="width:20px; height:20px;">`;
+        selBox.className = `btn1 btn-icon1 m-auto1`;
+        selBox.innerHTML = `<img src="${iconUrl}" alt="アイコン">`;
         selBoxGroup.append(selBox);
 
         selBox.addEventListener("click", (event) => {
@@ -168,8 +130,7 @@ export function customSearch(selectedText: string): void {
       });
 
       const offBtn = document.createElement("button");
-      offBtn.className = `btn1 selBoxGroup btn-icon1 ${btnThemeColor}`;
-      offBtn.style.width = "28px";
+      offBtn.className = `btn1 btn-icon1`;
       offBtn.id = "off-button";
       offBtn.title = "ツールをOFFにする";
       offBtn.innerHTML = `
@@ -177,10 +138,8 @@ export function customSearch(selectedText: string): void {
         <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
       </svg>
     `;
-      selBoxGroup.append(offBtn);
-
       const expandBtn = document.createElement("button");
-      expandBtn.className = `expand-btn ${btnThemeColor}`;
+      expandBtn.className = `expand-btn`;
       expandBtn.id = "expand-button";
       const expandIcon = {
         expand: `
@@ -194,12 +153,15 @@ export function customSearch(selectedText: string): void {
       </svg>
       `,
       };
-      expandBtn.innerHTML = expandIcon[isExpanded ? "expand" : "collapse"];
+      // isExpanded が true のときは「折りたたむ（collapse）」アイコンを表示する
+      expandBtn.innerHTML = expandIcon[isExpanded ? "collapse" : "expand"];
       expandBtn.addEventListener("click", () => {
         host.remove();
         chrome.storage.local.set({ isExpanded: !isExpanded });
       });
 
+      // offBtn はアイコングリッドの最後に入れる
+      selBoxGroup.append(offBtn);
       shadow.appendChild(selBoxGroup);
       shadow.appendChild(expandBtn);
       document.body.appendChild(host);
