@@ -1,5 +1,7 @@
 import styles from "./content.css?raw";
 
+const SEARCH_OVERLAY_ID = "search-overlay";
+
 function getFaviconUrl(domain: string): string {
   return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
 }
@@ -10,6 +12,9 @@ export function customSearch(selectedText: string): void {
 
   const range = selection.getRangeAt(0);
   const rect = range.getBoundingClientRect();
+
+  // 既にオーバーレイが存在する場合は新たに作成しない
+  if (document.getElementById(SEARCH_OVERLAY_ID)) return;
 
   chrome.storage.local.get(
     [
@@ -83,6 +88,7 @@ export function customSearch(selectedText: string): void {
 
       // Shadow host（位置制御用コンテナ）：ページCSSの影響を受けないようインラインスタイルで完結させる
       const host = document.createElement("div");
+      host.id = SEARCH_OVERLAY_ID;
       Object.assign(host.style as unknown as CSSStyleDeclaration, {
         position: position || "fixed",
         zIndex: "2147483647",
