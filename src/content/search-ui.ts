@@ -29,7 +29,6 @@ export async function customSearch(): Promise<void> {
         host.remove();
       }
     });
-    document.body.appendChild(host);
   } catch (err) {
     console.error("オーバーレイの作成に失敗", err);
   }
@@ -50,34 +49,9 @@ export async function createSearchOverlay(
   const isExpanded = Boolean(data.isExpanded);
   const _isIconWrap = Boolean(data.isIconWrap);
 
-  const positions: Record<
-    SelectPosition,
-    { top?: number; left?: number; right?: number; bottom?: number; position: string }
-  > = {
-    default: {
-      top: rect.bottom + window.scrollY + textDistance,
-      left: rect.left + window.scrollX,
-      position: "absolute",
-    },
-    "top-left": { top: 0, left: 0, position: "fixed" },
-    "top-right": { top: 0, right: 0, position: "fixed" },
-    "bottom-left": { left: 0, bottom: 0, position: "fixed" },
-    "bottom-right": { right: 0, bottom: 0, position: "fixed" },
-  };
-
-  const { top, left, right, bottom, position } = positions[selectPosition] || positions.default;
-
   // Shadow host（位置制御用コンテナ）：ページCSSの影響を受けないようインラインスタイルで完結させる
   const host = document.createElement("div");
   host.id = SEARCH_OVERLAY_ID;
-  Object.assign(host.style as CSSStyleDeclaration, {
-    position: position,
-    zIndex: "2147483647",
-    top: top !== undefined ? `${top}px` : undefined,
-    left: left !== undefined ? `${left}px` : undefined,
-    right: right !== undefined ? `${right}px` : undefined,
-    bottom: bottom !== undefined ? `${bottom}px` : undefined,
-  });
 
   const themeColor = newTheme === "dark" ? "#292e33" : "#ffffff";
   const fgColor = newTheme === "dark" ? "#ffffff" : "#0e0d0d";
@@ -179,6 +153,39 @@ export async function createSearchOverlay(
   selBoxGroup.append(offBtn);
   shadow.appendChild(selBoxGroup);
   shadow.appendChild(expandBtn);
+  document.body.appendChild(host);
+
+  const positions: Record<
+    SelectPosition,
+    {
+      top?: number | string;
+      left?: number | string;
+      right?: number | string;
+      bottom?: number | string;
+      position: string;
+    }
+  > = {
+    default: {
+      top: `${rect.bottom + window.scrollY + textDistance}px`,
+      left: `min(${rect.left}px, calc(100vw - ${host.clientWidth}px))`, // 画面端に行き過ぎないように調整
+      position: "absolute",
+    },
+    "top-left": { top: 0, left: 0, position: "fixed" },
+    "top-right": { top: 0, right: 0, position: "fixed" },
+    "bottom-left": { left: 0, bottom: 0, position: "fixed" },
+    "bottom-right": { right: 0, bottom: 0, position: "fixed" },
+  };
+
+  const { top, left, right, bottom, position } = positions[selectPosition] || positions.default;
+
+  Object.assign(host.style as CSSStyleDeclaration, {
+    position: position,
+    zIndex: "2147483647",
+    top: top !== undefined ? `${top}` : undefined,
+    left: left !== undefined ? `${left}` : undefined,
+    right: right !== undefined ? `${right}` : undefined,
+    bottom: bottom !== undefined ? `${bottom}` : undefined,
+  });
 
   return { host, offBtn };
 }
