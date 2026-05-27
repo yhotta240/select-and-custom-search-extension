@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.3] - 2026-05-28
+
+### Fixed
+
+- 検索ボックスのレイアウトを改善
+
 ## [1.5.2] - 2026-05-24
 
 ### Fixed

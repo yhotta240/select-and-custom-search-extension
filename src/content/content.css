@@ -66,7 +66,7 @@
 }
 
 .btn1:hover {
-  background: rgba(0, 0, 0, 0.20);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .btn-icon1 {
@@ -100,5 +100,5 @@
 }
 
 .expand-btn:hover {
-  background: rgba(0, 0, 0, 0.20);
+  background: rgba(0, 0, 0, 0.2);
 }
