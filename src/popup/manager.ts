@@ -8,7 +8,7 @@ import {
   type LogEntry,
   type LogLevel,
 } from "../utils/logger";
-import { getSettings, isEnabled, setEnabled, setSettings } from "../utils/storage";
+import { isEnabled, setEnabled, setSettings } from "../utils/storage";
 import { setupDocumentTab } from "./components/document";
 import { setupInfoTab } from "./components/info";
 import { setupMoreMenu } from "./components/menu";
@@ -54,7 +54,6 @@ export class PopupManager {
     }
 
     try {
-      this.settings = await getSettings();
       this.enabled = await isEnabled();
       if (this.enabledElement) this.enabledElement.checked = this.enabled;
     } catch (err) {

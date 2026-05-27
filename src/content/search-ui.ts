@@ -1,5 +1,5 @@
-import type { SearchMode, SelectPosition, Settings, Site, Theme } from "../settings";
-import { getStorage, setEnabled } from "../utils/storage";
+import type { SearchMode, SelectPosition, Site, Theme } from "../settings";
+import { getSettings, setEnabled } from "../utils/storage";
 import styles from "./content.css?raw";
 
 export const SEARCH_OVERLAY_ID = "search-overlay";
@@ -39,23 +39,14 @@ export async function createSearchOverlay(
   selectedText: string,
   rect: DOMRect,
 ): Promise<{ host: HTMLDivElement; offBtn: HTMLButtonElement }> {
-  const data = await getStorage<Settings>([
-    "sites",
-    "selectPosition",
-    "textDistance",
-    "theme",
-    "iconNum",
-    "searchMode",
-    "isExpanded",
-    "isIconWrap",
-  ]);
+  const data = await getSettings();
 
   const sites: Site[] | undefined = data.sites;
-  const selectPosition: SelectPosition = data.selectPosition ?? "default";
-  const textDistance = Number(data.textDistance ?? 5);
-  const newTheme: Theme = data.theme ?? "light";
-  const iconNum = Number(data.iconNum ?? 5);
-  const searchMode: SearchMode = data.searchMode ?? "new-tab";
+  const selectPosition: SelectPosition = data.selectPosition;
+  const textDistance = Number(data.textDistance);
+  const newTheme: Theme = data.theme;
+  const iconNum = Number(data.iconNum);
+  const searchMode: SearchMode = data.searchMode;
   const isExpanded = Boolean(data.isExpanded);
   const _isIconWrap = Boolean(data.isIconWrap);
 

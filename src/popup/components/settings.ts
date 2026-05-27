@@ -1,7 +1,8 @@
 import Sortable from "sortablejs";
 import "../../content/content.css";
 import { createSearchOverlay, SEARCH_OVERLAY_ID } from "../../content/search-ui";
-import { getStorage, setStorage } from "../../utils/storage";
+import { DEFAULT_SITES } from "../../settings";
+import { getSettings, getStorage, setStorage } from "../../utils/storage";
 import type { Site } from "../types";
 
 function qs<T extends HTMLElement>(id: string): T | null {
@@ -36,7 +37,8 @@ const DELETE_ICON = `<i class="bi bi-trash3" style="font-size:16px"></i>`;
 
 async function listSites(): Promise<void> {
   const data = await getStorage<{ sites?: Site[] }>("sites");
-  const sites = data.sites ?? [];
+  console.log("Loaded sites from storage:", data.sites);
+  const sites = data.sites ?? DEFAULT_SITES;
 
   const siteQueryListBody = qs<HTMLTableSectionElement>("site-query-list-body");
   if (!siteQueryListBody) return;
@@ -82,7 +84,7 @@ async function listSites(): Promise<void> {
     disabled: !(sortableButton?.checked ?? false),
     onEnd: async (evt) => {
       const d = await getStorage<{ sites?: Site[] }>("sites");
-      const currentSites = d.sites ?? [];
+      const currentSites = d.sites ?? DEFAULT_SITES;
       const [movedItem] = currentSites.splice(evt.oldIndex ?? 0, 1);
       currentSites.splice(evt.newIndex ?? 0, 0, movedItem);
       await setStorage({ sites: currentSites });
@@ -121,7 +123,7 @@ function toggleEditMode(isEditing: boolean, shouldSave: boolean): void {
   } else {
     if (shouldSave && siteQueryListBody.querySelector('input[type="text"]')) {
       getStorage<{ sites?: Site[] }>("sites").then((d) => {
-        const sites = d.sites ?? [];
+        const sites = d.sites ?? DEFAULT_SITES;
         rows.forEach((row, index) => {
           if (!sites[index]) return;
           const nameInput = row.cells[3]?.querySelector<HTMLInputElement>("input");
@@ -172,13 +174,7 @@ function showAlertInfo(checked: boolean, message: string): void {
 }
 
 export async function setupSettingsTab(): Promise<void> {
-  const data = await getStorage<{
-    isIconWrap?: boolean;
-    iconNum?: number;
-    searchMode?: string;
-    selectPosition?: string;
-    textDistance?: number;
-  }>(["isIconWrap", "iconNum", "searchMode", "selectPosition", "textDistance"]);
+  const data = await getSettings();
 
   const iconWrap = qs<HTMLInputElement>("icon-wrap");
   const iconNumRange = qs<HTMLInputElement>("icon-num-range");
@@ -188,16 +184,16 @@ export async function setupSettingsTab(): Promise<void> {
   const selectTextDistance = qs<HTMLInputElement>("select-text-distance");
   const selectTextDistanceLabel = qs<HTMLElement>("select-text-distance-label");
 
-  if (iconWrap) iconWrap.checked = Boolean(data.isIconWrap ?? false);
+  if (iconWrap) iconWrap.checked = Boolean(data.isIconWrap);
   if (iconNumRange) {
-    const n = Number(data.iconNum ?? 8);
+    const n = Number(data.iconNum);
     iconNumRange.value = String(n);
     if (iconNumText) iconNumText.textContent = String(n);
   }
-  if (searchMode) searchMode.value = String(data.searchMode ?? "new-tab");
-  if (selectPosition) selectPosition.value = String(data.selectPosition ?? "default");
+  if (searchMode) searchMode.value = String(data.searchMode);
+  if (selectPosition) selectPosition.value = String(data.selectPosition);
   if (selectTextDistance) {
-    const d = Number(data.textDistance ?? 6);
+    const d = Number(data.textDistance);
     selectTextDistance.value = String(d);
     if (selectTextDistanceLabel) selectTextDistanceLabel.textContent = String(d);
     const distWrapper = qs<HTMLElement>("search-box-distance");
@@ -350,7 +346,7 @@ export async function setupSettingsTab(): Promise<void> {
     if (visibleBtn) {
       const index = Number.parseInt(visibleBtn.dataset.index ?? "0", 10);
       const d = await getStorage<{ sites?: Site[] }>("sites");
-      const sites = d.sites ?? [];
+      const sites = d.sites ?? DEFAULT_SITES;
       if (sites[index]) {
         sites[index].isVisible = !(sites[index].isVisible !== false);
         await setStorage({ sites });
@@ -367,7 +363,7 @@ export async function setupSettingsTab(): Promise<void> {
         (e.target as HTMLElement).closest(".delete-list-btn") as Element,
       );
       const d = await getStorage<{ sites?: Site[] }>("sites");
-      const sites = d.sites ?? [];
+      const sites = d.sites ?? DEFAULT_SITES;
       const updatedSites = sites.filter((_, i) => i !== deleteIndex);
       await setStorage({ sites: updatedSites });
       await customSearchPreview();
@@ -443,7 +439,7 @@ function setupUrlRegistrationForm(): void {
     }
 
     const d = await getStorage<{ sites?: Site[] }>("sites");
-    const sites = d.sites ?? [];
+    const sites = d.sites ?? DEFAULT_SITES;
     const name = url.hostname;
     const siteIndex = sites.findIndex((site) => site.name === name);
     if (siteIndex !== -1) {
@@ -528,7 +524,7 @@ function setupUrlRegistrationForm(): void {
       templateSection.classList.remove("d-none");
 
       const d2 = await getStorage<{ sites?: Site[] }>("sites");
-      const currentSites = d2.sites ?? [];
+      const currentSites = d2.sites ?? DEFAULT_SITES;
 
       let lastSiteIndex = -1;
       for (let i = currentSites.length - 1; i >= 0; i--) {
