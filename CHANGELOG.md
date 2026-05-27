@@ -1,6 +1,13 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [1.5.4] - 2026-05-28
+
+### Fixed
+
+- ページ幅に応じたアイコンの折り返し表示を改善
+- 検索ボックスが画面外にはみ出さないように調整
+- デフォルト設定の読み込みを修正
 
 ## [1.5.3] - 2026-05-28
 
