@@ -155,6 +155,14 @@ export async function createSearchOverlay(
   shadow.appendChild(expandBtn);
   document.body.appendChild(host);
 
+  // アイコンをページ幅に合わせて折り返すかどうか
+  if (_isIconWrap) {
+    const iconWidth = 28; // アイコン1つあたりの幅（余白含む）
+    const availableWidth = window.innerWidth - rect.left;
+    const iconsPerRow = Math.min(iconNum, Math.floor(availableWidth / iconWidth));
+    host.style.setProperty("--icon-num", String(iconsPerRow));
+  }
+
   const positions: Record<
     SelectPosition,
     {
