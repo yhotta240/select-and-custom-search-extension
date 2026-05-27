@@ -1,5 +1,6 @@
 import Sortable from "sortablejs";
 import "../../content/content.css";
+import { createSearchOverlay, SEARCH_OVERLAY_ID } from "../../content/search-ui";
 import { getStorage, setStorage } from "../../utils/storage";
 import type { Site } from "../types";
 
@@ -15,203 +16,15 @@ function normalize(value: unknown): string {
   return value == null || value === "undefined" ? "" : String(value);
 }
 
-const defaultSites: Site[] = [
-  {
-    name: "google.com",
-    url: "https://google.com",
-    searchQuery: "/search?q=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "www.youtube.com",
-    url: "https://www.youtube.com",
-    searchQuery: "/results?search_query=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "x.com",
-    url: "https://x.com",
-    searchQuery: "/search?q=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "www.amazon.co.jp",
-    url: "https://www.amazon.co.jp",
-    searchQuery: "/s?k=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "search.rakuten.co.jp",
-    url: "https://search.rakuten.co.jp",
-    searchQuery: "/search/mall/",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "chatgpt.com",
-    url: "https://chatgpt.com",
-    searchQuery: "/?prompt=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "claude.ai",
-    url: "https://claude.ai",
-    searchQuery: "/new?q=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "open.spotify.com",
-    url: "https://open.spotify.com",
-    searchQuery: "/search/",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "www.pixiv.net",
-    url: "https://www.pixiv.net",
-    searchQuery: "/search?q=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "github.com",
-    url: "https://github.com",
-    searchQuery: "/search?q=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "www.deepl.com",
-    url: "https://www.deepl.com",
-    searchQuery: "/#en/ja/",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "ja.wikipedia.org",
-    url: "https://ja.wikipedia.org",
-    searchQuery: "/wiki/",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "store.steampowered.com",
-    url: "https://store.steampowered.com",
-    searchQuery: "/search/?term=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-  {
-    name: "www.cmoa.jp",
-    url: "https://www.cmoa.jp",
-    searchQuery: "/search/result/?header_word=",
-    urlSuffix: "",
-    isVisible: true,
-  },
-];
-
-const THEME_ICONS: Record<string, string> = {
-  light: `<i class="bi bi-brightness-high-fill" style="font-size:16px"></i>`,
-  dark: `<i class="bi bi-moon-stars-fill" style="font-size:16px"></i>`,
-};
-
 let sortableInstance: Sortable | null = null;
 
 async function customSearchPreview(): Promise<void> {
-  const data = await getStorage<{
-    sites?: Site[];
-    iconNum?: number;
-    theme?: string;
-    isExpanded?: boolean;
-  }>(["sites", "iconNum", "theme", "isExpanded"]);
-
-  const sites = data.sites ?? defaultSites;
-  const iconNum = Number(data.iconNum ?? 8);
-  const theme = data.theme ?? "light";
-  const isExpanded = Boolean(data.isExpanded);
-
-  const changeTheme = qs<HTMLInputElement>("change-theme");
-  const changeThemeIcon = qs<HTMLElement>("change-theme-icon");
-
-  if (changeTheme) changeTheme.checked = theme === "dark";
-  if (changeThemeIcon) changeThemeIcon.innerHTML = THEME_ICONS[theme] ?? THEME_ICONS.light;
-
-  const gap = 2;
-  const groupPadding = 6;
-  const padding = 4;
-  const buttonWidth = 20;
-  const maxWidth = iconNum * (buttonWidth + padding * 2 + gap) - gap + groupPadding * 2;
-
-  const selBoxElement = document.createElement("div");
-  selBoxElement.className = "my-extension-root sel-box-element";
-  // プレビューでも実UIと同じ外装スタイルをホスト要素へ適用
-  // （ボーダー・影・角丸は Shadow DOM 外側で管理されるため）
-  Object.assign(selBoxElement.style, {
-    maxWidth: `${maxWidth}px`,
-    zIndex: "0",
-    display: "inline-flex",
-    flexWrap: "wrap",
-    pointerEvents: "auto",
-    // ボーダー幅によるレイアウト崩れを防ぐため、幅にボーダーを含める
-    boxSizing: "border-box",
-    borderRadius: "0.5rem",
-    boxShadow:
-      theme === "dark"
-        ? "rgba(255, 255, 255, 0.06) 0px 2px 4px"
-        : "rgba(0, 0, 0, 0.08) 0px 4px 6px",
-  });
-
-  const selBoxGroup = document.createElement("div");
-  // content.css の共有スタイルがプレビューに適用されるよう `selBoxGroup` クラスを付与
-  selBoxGroup.className = "btn-group1 selBoxGroup my-extension-root flex-wrap1 w-100";
-  selBoxGroup.style.height = isExpanded ? `${20 + padding * 2 + gap + groupPadding}px` : "auto";
-  selBoxGroup.style.backgroundColor = theme === "light" ? "#ffffff" : "#292e33";
-  selBoxGroup.setAttribute("role", "group");
-  selBoxGroup.setAttribute("aria-label", "search-box");
-  selBoxGroup.id = "search-box";
-
-  await setStorage({ sites });
-
-  sites.forEach((site, index) => {
-    if (index >= iconNum - 1 && isExpanded) return;
-    if (site.isVisible === false) return;
-
-    const selBox = document.createElement("a");
-    const iconUrl = getFaviconUrl(site.url);
-    selBox.href = site.url;
-    selBox.id = site.name;
-    selBox.title = site.name;
-    selBox.target = "_blank";
-    selBox.className = `btn1 btn-icon1 m-auto1 ${theme === "light" ? "btn-light1" : "btn-dark1"}`;
-    selBox.innerHTML = `<img src="${iconUrl}" alt="icon" style="width:20px; height:20px;">`;
-    selBoxGroup.append(selBox);
-  });
-
-  const offBtn = document.createElement("button");
-  offBtn.className = `btn1 selBoxGroup btn-icon1 ${theme === "light" ? "btn-light1" : "btn-dark1"}`;
-  offBtn.style.width = "28px";
-  offBtn.id = "off-button";
-  offBtn.title = "ツールをOFFにする";
-  offBtn.innerHTML = `<i class="bi bi-ban" style="font-size:16px"></i>`;
-  selBoxGroup.append(offBtn);
-
-  const expandBtn = document.createElement("button");
-  expandBtn.className = `expand-btn btn-sm rounded-bottom ${theme === "light" ? "btn-light1" : "btn-dark1"} w-100 p-0 m-0`;
-  expandBtn.id = "expand-button";
-  const expandIconExpand = `<i class="bi bi-chevron-compact-down" style="font-size:16px"></i>`;
-  const expandIconCollapse = `<i class="bi bi-chevron-compact-up" style="font-size:16px"></i>`;
-  expandBtn.innerHTML = isExpanded ? expandIconExpand : expandIconCollapse;
-
-  selBoxElement.innerHTML = selBoxGroup.outerHTML + expandBtn.outerHTML;
-
+  const overlay = document.getElementById(SEARCH_OVERLAY_ID);
+  const { host } = await createSearchOverlay("preview", new DOMRect());
+  host.style.position = "static";
   const previewElement = qs<HTMLDivElement>("settings-preview");
-  if (previewElement) previewElement.innerHTML = selBoxElement.outerHTML;
+  previewElement?.appendChild(host);
+  if (overlay) overlay.remove();
 
   listSites();
 }

@@ -37,9 +37,5 @@ chrome.storage.onChanged.addListener((changes) => {
 });
 
 function eventHandler(): void {
-  const selectedText = window.getSelection()?.toString().trim();
-  if (!selectedText) return;
-  chrome.storage.local.set({ selectedText }, () => {
-    customSearch(selectedText);
-  });
+  customSearch();
 }
