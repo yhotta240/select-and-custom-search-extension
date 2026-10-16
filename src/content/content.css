@@ -94,11 +94,12 @@
   display: block;
   text-align: center;
   border: none;
-  background: transparent;
-  cursor: pointer;
+  background-color: var(--host-theme, #ffffff);
   color: var(--host-foreground);
+  cursor: pointer;
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .expand-btn:hover {
-  background: rgba(0, 0, 0, 0.2);
+  filter: brightness(0.9);
 }
