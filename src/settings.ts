@@ -1,6 +1,6 @@
 export type Theme = "light" | "dark";
 export type SelectPosition = "default" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
-export type SearchMode = "new-tab" | "current-tab" | "new-window" | "incognito";
+export type SearchMode = "new-tab" | "current-tab" | "new-window" | "split-view" | "incognito";
 export interface Site {
   name: string;
   url: string;

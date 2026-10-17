@@ -106,6 +106,9 @@ export async function createSearchOverlay(
           case "new-window":
             chrome.runtime.sendMessage({ action: "createWindow", url: searchUrl });
             break;
+          case "split-view":
+            chrome.runtime.sendMessage({ action: "createSplitView", url: searchUrl });
+            break;
           case "incognito":
             chrome.runtime.sendMessage({ action: "createIncognitoWindow", url: searchUrl });
             break;
