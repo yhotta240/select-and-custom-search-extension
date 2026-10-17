@@ -1,6 +1,18 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [1.6.0] - 2026-10-17
+
+### Added
+
+- 検索モードに分割表示を追加（Chrome 155 以降）
+- 検索サイト登録に，現在のタブのURLを入力するボタンを追加
+
+### Fixed
+
+- 一部サイトでexpandボタンの背景が透明になる問題を修正
+
 ## [1.5.4] - 2026-05-28
 
 ### Fixed
