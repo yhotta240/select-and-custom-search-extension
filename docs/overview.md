@@ -3,7 +3,7 @@ id: overview
 title: 概要
 order: 1
 visible: true
-expanded: true
+expanded: false
 date: 2026-02-19
 ---
 
