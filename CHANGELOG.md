@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.1] - 2026-10-17
+
+### Changed
+
+- 「選択＆カスタム検索」をデフォルトで有効に変更
+
+### Fixed
+
+- 新規登録した検索サイトのアイコンが検索ボックスに表示されない問題を修正
+- ドキュメントの概要を初期状態で閉じるように変更
+
 ## [1.6.0] - 2026-10-17
 
 ### Added
