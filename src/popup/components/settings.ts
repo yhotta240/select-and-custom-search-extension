@@ -2,6 +2,7 @@ import Sortable from "sortablejs";
 import "../../content/content.css";
 import { createSearchOverlay, SEARCH_OVERLAY_ID } from "../../content/search-ui";
 import { DEFAULT_SITES } from "../../settings";
+import { logError } from "../../utils/logger";
 import { getSettings, getStorage, setStorage } from "../../utils/storage";
 import type { Site } from "../types";
 
@@ -383,6 +384,19 @@ export async function setupSettingsTab(): Promise<void> {
 
 function setupUrlRegistrationForm(): void {
   const searchUrl = qs<HTMLInputElement>("searchUrl");
+
+  const useCurrentUrlButton = qs<HTMLButtonElement>("use-current-url");
+  useCurrentUrlButton?.addEventListener("click", async () => {
+    if (!searchUrl) return;
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.url) throw new Error("現在のタブのURLを取得できませんでした");
+      searchUrl.value = tab.url;
+      searchUrl.focus();
+    } catch (error) {
+      logError("現在のタブのURLを入力できませんでした", "popup", error);
+    }
+  });
 
   function handleSearchUrlInput(e: Event): void {
     const text = (e.target as HTMLInputElement).value;

@@ -209,15 +209,15 @@
         <form id="urlForm" class="mb-3">
           <label for="searchUrl" class="form-label">検索結果のURL</label>
           <div class="d-flex align-items-stretch">
-            <div class="d-flex text-nowrap flex-grow-1 position-relative me-2">
-              <input type="url" id="searchUrl" class="form-control form-control-sm h-100"
+            <div class="d-flex text-nowrap flex-grow-1 position-relative me-1" style="min-width: 0;">
+              <input type="url" id="searchUrl" class="form-control h-100 pe-4"
                 placeholder="例: https://www.google.com/search?q=sample" required>
               <button type="button" id="btn-close"
-                class="btn-close position-absolute top-50 end-0 translate-middle-y me-2" aria-label="Close"></button>
+                class="btn-close position-absolute top-50 end-0 translate-middle-y me-1" aria-label="Close"></button>
             </div>
-            <button type="submit" class="btn btn-primary px-4">解析する</button>
+            <button type="button" id="use-current-url" class="btn btn-outline-secondary btn-sm text-nowrap me-1 px-1" title="現在のタブのURLを入力">現在のタブ</button>
+            <button type="submit" class="btn btn-primary px-1 btn-sm text-nowrap">解析する</button>
           </div>
-
         </form>
 
         <div id="overwrite-confirm-section" class="d-none alert alert-warning py-1 mt-2">

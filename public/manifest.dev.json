@@ -10,6 +10,7 @@
   "permissions": [
     "storage",
     "tabs",
+    "activeTab",
     "contextMenus"
   ],
   "action": {
