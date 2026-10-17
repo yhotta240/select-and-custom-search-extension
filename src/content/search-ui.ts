@@ -76,7 +76,7 @@ export async function createSearchOverlay(
   selBoxGroup.id = "search-box";
 
   sites?.forEach((site) => {
-    if (!site.isVisible) return;
+    if (site.isVisible === false) return;
 
     const selBox = document.createElement("a");
     const iconUrl = getFaviconUrl(site.url);
