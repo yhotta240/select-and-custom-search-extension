@@ -1,12 +1,12 @@
 import { logError, logInfo, logWarn } from "../utils/logger";
+import { isEnabled as getEnabled } from "../utils/storage";
 
 const context = "all";
 const title = "選択＆カスタム検索: ";
-let isEnabled = false;
 
 console.log("background script");
 
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === "install") {
     logInfo("拡張機能がインストールされました", "background");
   } else if (details.reason === "update") {
@@ -16,6 +16,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     );
   }
 
+  const isEnabled = await getEnabled();
   chrome.contextMenus.create({
     title: `${title}${isEnabled ? "OFFにする" : "ONにする"}`,
     contexts: [context],
@@ -25,14 +26,13 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 chrome.storage.onChanged.addListener((changes) => {
   if (changes.isEnabled) {
-    isEnabled = Boolean(changes.isEnabled.newValue);
+    updateContextMenu();
   }
-  updateContextMenu();
 });
 
-chrome.contextMenus.onClicked.addListener((info) => {
+chrome.contextMenus.onClicked.addListener(async (info) => {
   if (info.menuItemId === "Sample") {
-    isEnabled = !isEnabled;
+    const isEnabled = !(await getEnabled());
     chrome.storage.local.set({ isEnabled });
     updateContextMenu();
   }
@@ -46,9 +46,9 @@ function isActionMessage(m: unknown): m is { action: string; url?: string } {
   return typeof m === "object" && m !== null && "action" in m;
 }
 
-chrome.runtime.onMessage.addListener((message: unknown) => {
+chrome.runtime.onMessage.addListener(async (message: unknown) => {
   if (isKeyEnabledMessage(message) && Boolean(message.keyEnabled) !== undefined) {
-    isEnabled = !isEnabled;
+    const isEnabled = !(await getEnabled());
     chrome.storage.local.set({ isEnabled });
     updateContextMenu();
   }
@@ -56,14 +56,12 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
 
 chrome.tabs.onUpdated.addListener((_tabId, changeInfo) => {
   if (changeInfo.status === "complete") {
-    chrome.storage.local.get("isEnabled", (data) => {
-      isEnabled = data?.isEnabled !== undefined ? Boolean(data.isEnabled) : isEnabled;
-      updateContextMenu();
-    });
+    updateContextMenu();
   }
 });
 
-function updateContextMenu(): void {
+async function updateContextMenu(): Promise<void> {
+  const isEnabled = await getEnabled();
   chrome.contextMenus.remove("Sample", () => {
     if (!chrome.runtime.lastError) {
       chrome.contextMenus.create({

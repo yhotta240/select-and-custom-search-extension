@@ -1,7 +1,7 @@
 import { windowOnload } from "./search-runner";
 import { customSearch } from "./search-ui";
 
-let isEnabled = false;
+let isEnabled = true;
 const _manifestData = chrome.runtime.getManifest();
 
 const handleTool = (enable: boolean): void => {
@@ -24,7 +24,7 @@ chrome.storage.local.get(
 document.addEventListener("keydown", (e) => {
   if (e.key === "q" && e.ctrlKey && !e.shiftKey && !e.altKey) {
     chrome.storage.local.get(["settings", "isEnabled"], (data: Record<string, unknown>) => {
-      isEnabled = !data.isEnabled;
+      isEnabled = !(data.isEnabled !== false);
       chrome.storage.local.set({ settings: data.settings, isEnabled });
       handleTool(isEnabled);
     });
